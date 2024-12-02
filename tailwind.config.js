@@ -10,8 +10,16 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        borderColor: "var(--border-color)",
+        textColor: "var(--text-color)",
+        linkColor: "var(--link-color)",
+        buttonColor: "var(--button-color)",
+        scrollbar: {
+          DEFAULT: '#e0e0e0',
+          dark: '#888',
+        },
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 };

@@ -2,26 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default theme (dark mode) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d1117; /* GitHub's dark background */
+  --foreground: #c9d1d9; /* Light gray text */
+  --border-color: #30363d; /* Border color */
+  --text-color: #8b949e; /* Secondary text color */
+  --link-color: #58a6ff; /* Link color */
+  --button-color: #21262d; /* Button color */
 }
 
+/* Light mode (optional) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f6f8fa; /* GitHub's light background */
+    --foreground: #24292f; /* Darker text for light mode */
+    --border-color: #d0d7de; /* Border color for light mode */
+    --text-color: #57606a; /* Secondary text color for light mode */
+    --link-color: #0969da; /* Link color for light mode */
+    --button-color: #212830; /* Button color for light mode */
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--foreground); /* Primary text color */
+  background: var(--background); /* Background color */
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.scrollbar-thumb {
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.7); /* Darker gray on hover */
 }
