@@ -10,6 +10,13 @@ const HabitWindow = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [totalPoints, setTotalPoints] = useState(0);
   const [maxPoints, setMaxPoints] = useState(0);
+  const [click_points, setClick_points] = useState(1);
+  const setClick_points_temp = (value) => {
+    const template = templates.find((template) => template.template_name === selectedTemplate);
+    template.click_points = value;
+    setClick_points(value);
+
+  }
   const exampleData = [
     { date: '2024-10-01', value: 30, label: 'Data Point 1', extraInfo: 'Extra info for Data Point 1' },
     { date: '2024-10-02', value: 40, label: 'Data Point 2', extraInfo: 'Extra info for Data Point 2' },
@@ -20,28 +27,8 @@ const HabitWindow = () => {
     { date: '2024-10-07', value: 70, label: 'Data Point 7', extraInfo: 'Extra info for Data Point 7' },
     { date: '2024-10-08', value: 80, label: 'Data Point 8', extraInfo: 'Extra info for Data Point 8' },
     { date: '2024-10-09', value: 65, label: 'Data Point 9', extraInfo: 'Extra info for Data Point 9' },
-    { date: '2024-10-10', value: 90, label: 'Data Point 10', extraInfo: 'Extra info for Data Point 10' },
-    { date: '2024-10-11', value: 75, label: 'Data Point 11', extraInfo: 'Extra info for Data Point 11' },
-    { date: '2024-10-12', value: 55, label: 'Data Point 12', extraInfo: 'Extra info for Data Point 12' },
-    { date: '2024-10-13', value: 35, label: 'Data Point 13', extraInfo: 'Extra info for Data Point 13' },
-    { date: '2024-10-14', value: 85, label: 'Data Point 14', extraInfo: 'Extra info for Data Point 14' },
-    { date: '2024-10-15', value: 40, label: 'Data Point 15', extraInfo: 'Extra info for Data Point 15' },
-    { date: '2024-10-16', value: 60, label: 'Data Point 16', extraInfo: 'Extra info for Data Point 16' },
-    { date: '2024-10-17', value: 50, label: 'Data Point 17', extraInfo: 'Extra info for Data Point 17' },
-    { date: '2024-10-18', value: 75, label: 'Data Point 18', extraInfo: 'Extra info for Data Point 18' },
-    { date: '2024-10-19', value: 30, label: 'Data Point 19', extraInfo: 'Extra info for Data Point 19' },
-    { date: '2024-10-20', value: 65, label: 'Data Point 20', extraInfo: 'Extra info for Data Point 20' },
-    { date: '2024-10-21', value: 45, label: 'Data Point 21', extraInfo: 'Extra info for Data Point 21' },
-    { date: '2024-10-22', value: 85, label: 'Data Point 22', extraInfo: 'Extra info for Data Point 22' },
-    { date: '2024-10-23', value: 55, label: 'Data Point 23', extraInfo: 'Extra info for Data Point 23' },
-    { date: '2024-10-24', value: 70, label: 'Data Point 24', extraInfo: 'Extra info for Data Point 24' },
-    { date: '2024-10-25', value: 90, label: 'Data Point 25', extraInfo: 'Extra info for Data Point 25' },
-    { date: '2024-10-26', value: 65, label: 'Data Point 26', extraInfo: 'Extra info for Data Point 26' },
-    { date: '2024-10-27', value: 55, label: 'Data Point 27', extraInfo: 'Extra info for Data Point 27' },
-    { date: '2024-10-28', value: 75, label: 'Data Point 28', extraInfo: 'Extra info for Data Point 28' },
-    { date: '2024-10-29', value: 40, label: 'Data Point 29', extraInfo: 'Extra info for Data Point 29' },
-    { date: '2024-10-30', value: 80, label: 'Data Point 30', extraInfo: 'Extra info for Data Point 30' },
-    { date: '2024-10-31', value: 60, label: 'Data Point 31', extraInfo: 'Extra info for Data Point 31' }
+    { date: '2024-10-10', value: 90, label: 'Data Point 10', extraInfo: 'Extra info for Data Point 10'},
+  
   ];
 
  
@@ -148,10 +135,14 @@ const HabitWindow = () => {
     setSelectedTemplate(templates[0]?.template_name);
     setTotalPoints(templates[0]?.total_points);
     setMaxPoints(templates[0]?.max_points);
+    setClick_points(templates.find((template) => template.template_name === selectedTemplate)?.click_points || 1);
+
   }, []);
   useEffect(() => {
-    setTotalPoints(templates.find((template) => template.template_name === selectedTemplate)?.total_points);
-    setMaxPoints(templates.find((template) => template.template_name === selectedTemplate)?.max_points);
+    const template = templates.find((template) => template.template_name === selectedTemplate);
+    setTotalPoints(template?.total_points);
+    setMaxPoints(template?.max_points);
+    setClick_points(template?.click_points || 1);
   }, [selectedTemplate]);
 
   const updateHabit = (habitId, updates) => {
@@ -177,11 +168,37 @@ const HabitWindow = () => {
       })
     );
   };
-  
+
+  const addHabit = () => {
+    setTemplates((prevTemplates) =>
+      prevTemplates.map((template) => {
+        if (template.template_name === selectedTemplate) {
+          return {
+            ...template,
+            habits: [...template.habits, { id: template.habits.length + 1, name: '', description: '', target: 0, current: 0, message: '' }],
+          };
+        }
+        return template;
+      })
+    );
+  };
+
+  const removeHabit = (habitId) => {
+    setTemplates((prevTemplates) =>
+      prevTemplates.map((template) => {
+        if (template.template_name === selectedTemplate) {
+          return {
+            ...template,
+            habits: template.habits.filter((habit) => habit.id !== habitId),
+          };
+        }
+        return template;
+      })
+    );
+  };
   
   const selectedHabits = templates.find((template) => template.template_name === selectedTemplate)?.habits || [];
   const selectedT = templates.find((template) => template.template_name === selectedTemplate)|| {};
-  const click_points = templates.find((template) => template.template_name === selectedTemplate)?.click_points || 1;
 
   return (
     <div className='m-auto  w-11/12 p-4'>
@@ -207,7 +224,7 @@ const HabitWindow = () => {
       </div>
       <div className='flex justify-between  gap-6'>
 
-        <HabitContainer habits={selectedHabits} click_points={click_points} updateHabit={updateHabit}/>
+        <HabitContainer habits={selectedHabits} setClick_points_temp={setClick_points_temp} removeHabit={removeHabit} addHabit={addHabit} click_points={click_points} updateHabit={updateHabit}/>
         <div className='w-1/2 mt-2 flex flex-col  items-center gap-2'>
           <ProgressBar score={totalPoints} maxScore={maxPoints} />
           <LineChart data={exampleData} />

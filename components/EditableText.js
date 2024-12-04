@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 
-const EditableText = ({ value, onChange, className = "" }) => {
+const EditableText = ({ value, onChange, className = '' }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value);
 
@@ -10,7 +11,7 @@ const EditableText = ({ value, onChange, className = "" }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       setIsEditing(false);
       onChange(inputValue);
     }
@@ -31,7 +32,7 @@ const EditableText = ({ value, onChange, className = "" }) => {
       onClick={() => setIsEditing(true)}
       className={`cursor-pointer ${className}`}
     >
-      {inputValue || "Click to edit"}
+      {inputValue || 'Click to edit'}
     </span>
   );
 };
