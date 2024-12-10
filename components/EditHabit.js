@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import EditableText from './EditableText';
 
-const EditHabit = ({ habit, updateHabit, removeHabit }) => {
+const EditHabit = ({ habit, handleUpdate, removeHabit }) => {
   const [currentTarget, setCurrentTarget] = useState(habit.target);
+
 
   const handleTargetChange = (e) => {
     let newValue = Number(e.target.value);
@@ -11,9 +12,11 @@ const EditHabit = ({ habit, updateHabit, removeHabit }) => {
     if (newValue > 99) newValue = 99;
     setCurrentTarget(newValue);
     if(newValue < habit.current){
-      updateHabit(habit.id, { current: newValue });
+      handleUpdate(habit.id, { current: newValue });
+    }else{
+
+      handleUpdate(habit.id, { target: newValue });
     }
-    updateHabit(habit.id, { target: newValue });
   };
 
   const handleDelete = () => {
@@ -37,13 +40,13 @@ const EditHabit = ({ habit, updateHabit, removeHabit }) => {
           <EditableText
             value={habit.name}
             className="bg-transparent text-white outline-none border-none"
-            onChange={(value) => updateHabit(habit.id, { name: value })}
+            onChange={(value) => handleUpdate(habit.id, { name: value })}
           />
         </div>
         <EditableText
           value={habit.description}
           className="text-white bg-transparent w-96 outline-none border-none"
-          onChange={(value) => updateHabit(habit.id, { description: value })}
+          onChange={(value) => handleUpdate(habit.id, { description: value })}
         />
       </div>
 

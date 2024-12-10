@@ -2,18 +2,19 @@
 import React, { useState } from 'react';
 
 const Habit = (props) => {
-  const [currentValue, setCurrentValue] = useState(props.habit.current);
+  const [currentValue, setCurrentValue] = useState(Number(props.habit.current));
   const [isEditingMessage, setIsEditingMessage] = useState(false); 
   const [message, setMessage] = useState(props.habit.message || "");
 
   const handleClick_points = () => {
-    let newValue = currentValue + props.click_points;
+
+    let newValue = Number(currentValue) + props.click_points;
+
     if (newValue < 0 ){
       newValue=0;
     }
-    if(newValue > props.habit.target){
-      newValue = props.habit.target;
-    }
+    
+    newValue = Math.min(newValue, props.habit.target);
     setCurrentValue(newValue);
     props.updateHabit(props.habit.id, { current: newValue });
     
