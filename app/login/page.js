@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import auth from '../appwrite/auth';
 import { useRouter } from 'next/navigation';
+import service from '../appwrite/services';
 
 const Page = () => {
     const [name, setName] = useState('');
@@ -42,10 +43,31 @@ const Page = () => {
             let response;
             if (signingIn) {
                 response = await auth.login({ email, password });
-                console.log('Logged in successfully!', response);
+                console.log('Logged in successfully!', response.userId);
             } else {
                 response = await auth.createAccount({ email, password, name });
                 console.log('Account created successfully!', response);
+               
+                for (let index = 0; index < 3; index++) {
+                    await service.createTemplate({
+                        max_points: 1,
+                        total_points: 1,
+                        template_name: `template ${index + 1}`,
+                        click_points: 1,
+                        habits: [
+                            {
+                                "id": 1,
+                                "name": "first habit name",
+                                "description": "description of what will be you doing",
+                                "target": 1,
+                                "current": 1,
+                                "message": "you can edit this message by clicking on it",
+                            }
+                        ]  
+                    }).then((res) => {
+                        console.log(res);
+                    })
+                }
             }
             router.push('/');
         } catch (error) {
@@ -55,6 +77,8 @@ const Page = () => {
             setLoading(false);
         }
     };
+
+
 
     return (
         <div className='flex min-h-screen justify-center items-center bg-gray-100'>
