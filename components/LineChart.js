@@ -3,163 +3,65 @@ import { Chart, registerables } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 Chart.register(...registerables);
 
-const LineChart = () => {
+const LineChart = ({ width = '100%', height = '320px' }) => {
   useEffect(() => {
-    const exampleData = [
-      {
-        date: '2025-02-01',
-        template_id: 111,
-        total_points: 13,
-        template_name: 'Health Tracker',
-        max_points: 15,
+    const exampleData = Array.from({ length: 30 }, (_, index) => {
+      const startDate = new Date('2025-02-01');
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + index);
+      const formattedDate = currentDate.toISOString().split('T')[0];
+      const maxPoints = 5;
+      const current = Math.floor(Math.random() * (maxPoints + 1));
+
+      return {
+        date: formattedDate,
+        template_id: 100 + index + 1,
+        total_points: current,
+        template_name: 'Simple Habit Tracker',
+        max_points: maxPoints,
         habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 4, message: 'Missed one glass.' },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 3 },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 6 },
+          {
+            id: 1,
+            name: 'Drink Water',
+            description: 'Consume 8 glasses of water.',
+            target: maxPoints,
+            current,
+            message: current < maxPoints ? `Missed ${maxPoints - current} glasses.` : 'Target achieved!',
+          },
         ],
-      },
-      {
-        date: '2025-02-02',
-        template_id: 112,
-        total_points: 14,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 5 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 2, message: 'Only ate one orange today.' },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 7 },
-        ],
-      },
-      {
-        date: '2025-02-03',
-        template_id: 113,
-        total_points: 12,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 3 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 3, message: 'Had a mango and a kiwi.' },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 6 },
-        ],
-      },
-      {
-        date: '2025-02-04',
-        template_id: 114,
-        total_points: 15,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 5 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 3 },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 7 },
-        ],
-      },
-      {
-        date: '2025-02-05',
-        template_id: 115,
-        total_points: 11,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 4 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 2 },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 5, message: 'Couldn’t sleep well.' },
-        ],
-      },
-      {
-        date: '2025-02-06',
-        template_id: 116,
-        total_points: 13,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 5 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 2, message: 'Had only an apple.' },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 6 },
-        ],
-      },
-      {
-        date: '2025-02-07',
-        template_id: 117,
-        total_points: 14,
-        template_name: 'Health Tracker',
-        max_points: 15,
-        habits: [
-          { id: 4, name: 'Drink Water', description: 'Consume 8 glasses of water.', target: 5, current: 5 },
-          { id: 5, name: 'Eat Fruits', description: 'Have at least 2 servings of fruits.', target: 3, current: 3 },
-          { id: 6, name: 'Sleep 8 Hours', description: "Get a full night's rest.", target: 7, current: 6, message: 'Woke up early.' },
-        ],
-      },
-    ];
-    
-    // const exampleData = Array.from({ length: 30 }, (_, index) => {
-    //   const startDate = new Date('2025-02-01'); // Start date
-    //   const currentDate = new Date(startDate);
-    //   currentDate.setDate(startDate.getDate() + index); // Add days to the start date
-    
-    //   const formattedDate = currentDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-    //   const maxPoints = 5; // Maximum points for the habit
-    //   const current = Math.floor(Math.random() * (maxPoints + 1)); // Random current points (0 to maxPoints)
-    
-    //   return {
-    //     date: formattedDate,
-    //     template_id: 100 + index + 1, // Unique template ID for each day
-    //     total_points: current,
-    //     template_name: 'Simple Habit Tracker',
-    //     max_points: maxPoints,
-    //     habits: [
-    //       {
-    //         id: 1,
-    //         name: 'Drink Water',
-    //         description: 'Consume 8 glasses of water.',
-    //         target: maxPoints,
-    //         current,
-    //         message: current < maxPoints ? `Missed ${maxPoints - current} glasses.` : 'Target achieved!',
-    //       },
-    //     ],
-    //   };
-    // });
-    
+      };
+    });
 
     const labels = exampleData.map((item) => item.date);
-const percentages = exampleData.map((item) => (item.total_points / item.max_points) * 100);
+    const percentages = exampleData.map((item) => (item.total_points / item.max_points) * 100);
 
-// Get the canvas context
-const ctx = document.getElementById('lineChart').getContext('2d');
+    const ctx = document.getElementById('lineChart').getContext('2d');
 
-// Destroy the previous chart instance if it exists
-if (window.chartInstance) {
-  window.chartInstance.destroy();
-}
+    if (window.chartInstance) {
+      window.chartInstance.destroy();
+    }
 
-// Define the plugin for the gradient zone
-const gradientZonePlugin = {
-  id: 'gradientZone',
-  beforeDraw: (chart) => {
-    const { ctx, chartArea, scales } = chart;
-    ctx.save();
+    const gradientZonePlugin = {
+      id: 'gradientZone',
+      beforeDraw: (chart) => {
+        const { ctx, chartArea, scales } = chart;
+        ctx.save();
 
-    // Create the gradient from purple to transparent
-    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-    gradient.addColorStop(0, '#c000ff'); // Purple at the top
-    gradient.addColorStop(1, 'rgba(192, 0, 255, 0)'); // Transparent at the bottom
+        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        gradient.addColorStop(0, '#c000ff');
+        gradient.addColorStop(1, 'rgba(192, 0, 255, 0)');
 
-    // Set the gradient as the fill style
-    ctx.fillStyle = gradient;
+        ctx.fillStyle = gradient;
 
-    // Draw the gradient area based on the percentage
-    const yPosition = scales.y.getPixelForValue(75); // Get the y-position for 75%
-    ctx.fillRect(chartArea.left, yPosition, chartArea.width, chartArea.bottom - yPosition);
+        const yPosition = scales.y.getPixelForValue(75);
+        ctx.fillRect(chartArea.left, yPosition, chartArea.width, chartArea.bottom - yPosition);
 
-    ctx.restore();
-  },
-};
+        ctx.restore();
+      },
+    };
 
-// Register the plugin
-Chart.register(gradientZonePlugin);
+    Chart.register(gradientZonePlugin);
 
-
-    // Create a new chart
     window.chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
@@ -184,9 +86,9 @@ Chart.register(gradientZonePlugin);
         responsive: true,
         plugins: {
           tooltip: {
-            backgroundColor: '#333', // Dark background for tooltips
-            titleColor: '#fff', // Light text color for title
-            bodyColor: '#ddd', // Slightly dim body text
+            backgroundColor: '#333',
+            titleColor: '#fff',
+            bodyColor: '#ddd',
             callbacks: {
               label: function (context) {
                 const index = context.dataIndex;
@@ -209,13 +111,13 @@ Chart.register(gradientZonePlugin);
             title: {
               display: false,
               text: 'Percentage (%)',
-              color: '#fff', // White text for axis labels
+              color: '#fff',
             },
             grid: {
-              color: '#444', // Darker grid lines for contrast
+              color: '#444',
             },
             ticks: {
-              color: '#ccc', // Light ticks
+              color: '#ccc',
             },
           },
           x: {
@@ -233,22 +135,26 @@ Chart.register(gradientZonePlugin);
               color: '#fff',
             },
             grid: {
-              color: '#444', // Darker grid lines
+              color: '#444',
             },
             ticks: {
-              color: '#ccc', // Light ticks
+              color: '#ccc',
             },
           },
         },
       },
-      plugins: [gradientZonePlugin], // Add the plugin here
+      plugins: [gradientZonePlugin],
     });
   }, []);
 
   return (
     <div className="bg-transparent w-full rounded-lg border border-borderColor p-2">
       <h2 className="text-lg w-fit text-white mx-auto">Performance Line Chart</h2>
-      <canvas id="lineChart" className="w-full mx-auto h-80"></canvas>
+      <canvas
+        id="lineChart"
+        style={{ width, height }}
+        className="mx-auto"
+      ></canvas>
     </div>
   );
 };

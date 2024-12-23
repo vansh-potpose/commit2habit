@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 
 const EditableText = ({ value, onChange, className = '' }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,6 +9,8 @@ const EditableText = ({ value, onChange, className = '' }) => {
     setIsEditing(false);
     onChange(inputValue);
   };
+
+ 
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {

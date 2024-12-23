@@ -10,6 +10,7 @@
   --text-color: #8b949e; /* Secondary text color */
   --link-color: #58a6ff; /* Link color */
   --button-color: #21262d; /* Button color */
+  --svg-color:#9198a1; /* SVG color */
 }
 
 /* Light mode (optional) */
@@ -21,6 +22,7 @@
     --text-color: #57606a; /* Secondary text color for light mode */
     --link-color: #0969da; /* Link color for light mode */
     --button-color: #212830; /* Button color for light mode */
+    --svg-color:#6a737d; /* SVG color for light mode */
   }
 }
 

@@ -47,7 +47,7 @@ const Page = () => {
             } else {
                 response = await auth.createAccount({ email, password, name });
                 console.log('Account created successfully!', response);
-               
+
                 for (let index = 0; index < 3; index++) {
                     await service.createTemplate({
                         max_points: 1,
@@ -63,7 +63,18 @@ const Page = () => {
                                 "current": 1,
                                 "message": "you can edit this message by clicking on it",
                             }
-                        ]  
+                        ]
+                    }).then((res) => {
+                        console.log(res);
+                    })
+
+                    await service.createAbility({
+                        name: `ability ${index + 1}`,
+                        current_points: 0,
+                        challenges: [
+                            { "challenge_id": 1, "name": "first challenge", isCompleted: false, points: 5 },
+                            { "challenge_id": 2, "name": "second challenge", isCompleted: false, points: 10 },
+                        ]
                     }).then((res) => {
                         console.log(res);
                     })
