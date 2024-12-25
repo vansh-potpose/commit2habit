@@ -14,7 +14,7 @@ const HabitWindow = (
   totalPoints, 
   maxPoints, 
   template, 
-  exampleData, 
+  DailyProgresses, 
   updateSelectedTemplate,  
   updateHabit,
   saveDailyProgress}
@@ -53,7 +53,7 @@ const HabitWindow = (
 
         <div className='w-1/2 mt-2 flex flex-col   items-center gap-2'>
           <ProgressBar score={totalPoints} maxScore={maxPoints} />
-          <LineChart data={exampleData} height='150px' />
+          <LineChart exampleData={DailyProgresses} days={7} height='150px' />
         </div>
 
       </div>

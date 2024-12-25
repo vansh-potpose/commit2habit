@@ -1,42 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 Chart.register(...registerables);
+import ProgressModal from './ProgressModal';
 
-const LineChart = ({ width = '100%', height = '320px' }) => {
+const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null); // State to hold selected data for the modal
+
+  const handleOpenModal = (data) => {
+    setModalData(data); // Set the selected data
+    setModalOpen(true); // Open the modal
+    console.log('Modal Data:', exampleData);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false); // Close the modal
+  };
+
+  const handleBackFromModal = () => {
+    setModalOpen(false); // Close the modal when the back icon is clicked
+  };
+
   useEffect(() => {
-    const exampleData = Array.from({ length: 30 }, (_, index) => {
-      const startDate = new Date('2025-02-01');
-      const currentDate = new Date(startDate);
-      currentDate.setDate(startDate.getDate() + index);
-      const formattedDate = currentDate.toISOString().split('T')[0];
-      const maxPoints = 5;
-      const current = Math.floor(Math.random() * (maxPoints + 1));
+    if (!exampleData || !Array.isArray(exampleData)) {
+      console.log('Example Data:', exampleData);
+      console.error('exampleData is not valid or missing.');
+      return;
+    }
 
-      return {
-        date: formattedDate,
-        template_id: 100 + index + 1,
-        total_points: current,
-        template_name: 'Simple Habit Tracker',
-        max_points: maxPoints,
-        habits: [
-          {
-            id: 1,
-            name: 'Drink Water',
-            description: 'Consume 8 glasses of water.',
-            target: maxPoints,
-            current,
-            message: current < maxPoints ? `Missed ${maxPoints - current} glasses.` : 'Target achieved!',
-          },
-        ],
-      };
+    // Filter data for the last {days} days
+    const today = new Date();
+    const filteredData = exampleData.filter((item) => {
+      const itemDate = new Date(item.date);
+      return (today - itemDate) / (1000 * 60 * 60 * 24) <= days;
     });
 
-    const labels = exampleData.map((item) => item.date);
-    const percentages = exampleData.map((item) => (item.total_points / item.max_points) * 100);
+    console.log('Filtered Data:', filteredData);
+
+    const labels = filteredData.map((item) => item.date.split('T')[0]); // Extracting dates
+    const percentages = filteredData.map((item) => (item.total_points / item.max_points) * 100); // Calculating percentages
 
     const ctx = document.getElementById('lineChart').getContext('2d');
 
+    // Destroy the previous chart instance to avoid overlap issues
     if (window.chartInstance) {
       window.chartInstance.destroy();
     }
@@ -62,6 +69,7 @@ const LineChart = ({ width = '100%', height = '320px' }) => {
 
     Chart.register(gradientZonePlugin);
 
+    // Creating the chart instance
     window.chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
@@ -92,9 +100,11 @@ const LineChart = ({ width = '100%', height = '320px' }) => {
             callbacks: {
               label: function (context) {
                 const index = context.dataIndex;
-                const { habits } = exampleData[index];
+                const { habits } = filteredData[index];
                 const failedHabits = habits.filter((h) => h.current !== h.target);
-                return failedHabits.map((h) => `${h.name}: ${h.current}/${h.target}`).join('\n') || 'All habits met targets!';
+                return failedHabits
+                  .map((h) => `${h.name}: ${h.current}/${h.target}`)
+                  .join('\n') || 'All habits met targets!';
               },
             },
           },
@@ -102,8 +112,8 @@ const LineChart = ({ width = '100%', height = '320px' }) => {
         onClick: (event, elements) => {
           if (elements.length > 0) {
             const index = elements[0].index;
-            const template = exampleData[index];
-            alert(`Template Details:\n${JSON.stringify(template, null, 2)}`);
+            const selectedData = filteredData[index]; // Get the selected data from filteredData
+            handleOpenModal(selectedData); // Open modal with selected data
           }
         },
         scales: {
@@ -145,7 +155,7 @@ const LineChart = ({ width = '100%', height = '320px' }) => {
       },
       plugins: [gradientZonePlugin],
     });
-  }, []);
+  }, [exampleData, days]); // Adding exampleData and days as dependencies
 
   return (
     <div className="bg-transparent w-full rounded-lg border border-borderColor p-2">
@@ -155,6 +165,19 @@ const LineChart = ({ width = '100%', height = '320px' }) => {
         style={{ width, height }}
         className="mx-auto"
       ></canvas>
+
+      {/* Modal */}
+      {modalData && (
+        <ProgressModal
+          isOpen={isModalOpen}
+          template={modalData}
+          onClose={handleCloseModal}
+          onBack={handleBackFromModal}
+          totalPoints={modalData.total_points} // Pass the data to the modal
+          maxPoints={modalData.max_points} // Pass th e data to the modal
+          label={`Progress for ${modalData.date.split('T')[0]}`} // Pass the date as label
+        />
+      )}
     </div>
   );
 };

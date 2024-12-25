@@ -6,7 +6,7 @@ import { use } from 'react';
 export class Service {
     client = new Client();
     databases;
-   
+
 
     constructor() {
         this.client
@@ -14,11 +14,11 @@ export class Service {
             .setProject(conf.appwriteProjectId);
         this.databases = new Databases(this.client);
 
-        
-        
+
+
     }
 
-    async createTemplate({max_points, total_points, template_name, click_points, habits }) {
+    async createTemplate({ max_points, total_points, template_name, click_points, habits }) {
         try {
             habits = JSON.stringify(habits);
             let user_id = (await auth.getCurrentUser()).$id;
@@ -34,8 +34,8 @@ export class Service {
                     total_points,
                     template_name,
                     click_points,
-                    habits 
-                    
+                    habits
+
                 }
             );
         } catch (error) {
@@ -85,11 +85,11 @@ export class Service {
         try {
             return await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
-                  conf.appwriteTemplatesCollectionId,
+                conf.appwriteTemplatesCollectionId,
                 [Query.equal('template_id', template_id)]  // Using Query.equal for better readability
             );
         } catch (error) {
-            console.log("Appwrite service :: getTemplate :: error", error,template_id);
+            console.log("Appwrite service :: getTemplate :: error", error, template_id);
             return null;  // Returning null to signify an error
         }
     }
@@ -97,30 +97,30 @@ export class Service {
     async getTemplates() {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
-            console.log("user_id",user_id);
-            let result= await this.databases.listDocuments(
+            console.log("user_id", user_id);
+            let result = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
-                  conf.appwriteTemplatesCollectionId,
+                conf.appwriteTemplatesCollectionId,
                 [Query.equal('user_id', user_id)]  // Using Query.equal for better readability
             );
-            console.log("result",result);
+            console.log("result", result);
             for (let i = 0; i < result.documents.length; i++) {
                 result.documents[i].habits = JSON.parse(result.documents[i].habits);
             }
             return result;
         } catch (error) {
-            console.log("Appwrite service :: getTemplates :: error", error,user_id);
+            console.log("Appwrite service :: getTemplates :: error", error, user_id);
             return null;  // Returning null to signify an error
         }
     }
 
     // abilitis functions
 
-    async createAbility({name, current_points, challenges }) {
+    async createAbility({ name, current_points, challenges }) {
         try {
             challenges = JSON.stringify(challenges);
             let user_id = (await auth.getCurrentUser()).$id;
-            
+
             let ability_id = ID.unique();
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -176,11 +176,11 @@ export class Service {
         }
     }
 
-    async getAbilities(){
+    async getAbilities() {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
-            
-            let result= await this.databases.listDocuments(
+
+            let result = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteAbilitiesCollectionId,
                 [Query.equal('user_id', user_id)]  // Using Query.equal for better readability
@@ -198,31 +198,34 @@ export class Service {
 
 
 
-    // daily progress functions
+    // daily progress functions----------------------------------------------
     async createDailyProgress({ template }) {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
             let date = new Date(); // Full ISO format
-            date.setHours(0, 0, 0, 0);
-            date = date.toISOString();
-    
+            console.log("Initial date:", date);
+
+            // Set the time to midnight UTC to ensure consistency across time zones
+            date.setUTCHours(0, 0, 0, 0);
+            date = date.toISOString(); // Convert to ISO string in UTC
+            console.log("Adjusted date (UTC):", date);
             // Check if a document exists for the given user and date
             let document = await this.getDailyProgress({ date });
-    
+
             if (document && document.documents.length > 0) {
                 // Update the existing document and return it
                 return await this.updateDailyProgress({ date, template });
             }
-    
+
             // Extract template fields
             let { template_id, template_name, habits, max_points, total_points } = template;
             habits = JSON.stringify(habits);
-    
+
             // Generate a unique ID for the document if not provided
             let daily_progress_id = ID.unique(); // Example: User-based unique ID
-    
+
             // Create a new document
-            console.log("daily_progress_id",habits);
+            console.log("daily_progress_id", habits);
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
@@ -243,8 +246,8 @@ export class Service {
             return null; // Returning null to signify an error
         }
     }
-    
-    
+
+
     async getDailyProgressDocuments({ user_id, date }) {
         try {
             return await this.databases.listDocuments(
@@ -260,20 +263,20 @@ export class Service {
             return null; // Return null on error
         }
     }
-    
-    
 
-    async deleteDailyProgress({ date }) {
+
+
+    async deleteDailyProgress(date) {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
-            date = new Date(date).toISOString();
-    
+
+            console.log("deleteDailyProgress", date);
             let documents = await this.getDailyProgressDocuments({ user_id, date });
-    
+
             if (!documents || documents.documents.length === 0) {
                 throw new Error("No document found for the given date.");
             }
-    
+
             for (let doc of documents.documents) {
                 await this.databases.deleteDocument(
                     conf.appwriteDatabaseId,
@@ -281,32 +284,32 @@ export class Service {
                     doc.$id
                 );
             }
-    
+
             return true;
         } catch (error) {
             console.log("Appwrite service :: deleteDailyProgress :: error", error);
             return false;
         }
     }
-    
+
 
 
     async updateDailyProgress({ date, template }) {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
             date = new Date(date).toISOString();
-    
+            
             let documents = await this.getDailyProgressDocuments({ user_id, date });
-    
+
             if (!documents || documents.documents.length === 0) {
                 throw new Error("No document found for the given date.");
             }
-    
+
             let document = documents.documents[0];
-    
+
             let { template_id, template_name, habits, max_points, total_points } = template;
             habits = JSON.stringify(habits);
-    
+
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
@@ -324,15 +327,15 @@ export class Service {
             return null;
         }
     }
-    
-    
+
+
 
     async getDailyProgress({ date }) {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
             date = new Date(date).toISOString();
-            console.log("date",date);
-            return await this.databases.listDocuments(
+
+            let result = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
                 [
@@ -340,18 +343,51 @@ export class Service {
                     Query.equal('date', date)
                 ]
             );
-           
+            for (let i = 0; i < result.documents.length; i++) {
+                result.documents[i].habits = JSON.parse(result.documents[i].habits);
+            }
+            return result;
+
         } catch (error) {
             console.log("Appwrite service :: getDailyProgress :: error", error);
             return null;
         }
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+    async getDailyProgresses() {
+        try {
+            let user_id = (await auth.getCurrentUser()).$id;
+
+            // Fetch documents and sort by 'date' in descending order (latest first)
+            let result = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteDailyProgressCollectionId,
+                [
+                    Query.equal('user_id', user_id),    // Filter by user ID
+                    Query.orderDesc('date')             // Sort by 'date' field in descending order
+                ]
+            );
+
+            // Parse habits field to convert JSON string back to an object
+            for (let i = 0; i < result.documents.length; i++) {
+                result.documents[i].habits = JSON.parse(result.documents[i].habits);
+            }
+
+            return result;
+        } catch (error) {
+            console.log("Appwrite service :: getDailyProgresses :: error", error);
+            return null;
+        }
+    }
+
+
+
+
+
+
 }
 
 const service = new Service();

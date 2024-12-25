@@ -19,6 +19,28 @@ export default function Home() {
       }
     });
 
+    async function fetchData() {
+      try {
+        const response = await service.getTemplates();
+        
+        if (response && Array.isArray(response.documents)) {
+          const templatesData = response.documents;
+          
+          setTemplates(templatesData);
+          setselectedTemplateID(templatesData[0]?.template_id || '');
+          setTotalPoints(templatesData[0]?.total_points || 0);
+          setMaxPoints(templatesData[0]?.max_points || 0);
+        } else {
+          console.error('Fetched data is not in the expected format:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+      }
+    }
+    fetchData();
+
+    fetchDailyProgress();
+
   }, []);
 
 
@@ -185,43 +207,18 @@ export default function Home() {
   const [templates, setTemplates] = useState([]);
   
   const [selectedTemplateID, setselectedTemplateID] = useState('')
+  const [DailyProgresses, setDailyProgresses] = useState([]);
   
   const [totalPoints, setTotalPoints] = useState(0);
   const [maxPoints, setMaxPoints] = useState(0);
   
   const template = templates.find((template) => template.template_id === selectedTemplateID)|| {};
 
- 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await service.getTemplates();
-        
-        if (response && Array.isArray(response.documents)) {
-          const templatesData = response.documents;
-          
-          setTemplates(templatesData);
-          setselectedTemplateID(templatesData[0]?.template_id || '');
-          setTotalPoints(templatesData[0]?.total_points || 0);
-          console.log("useeffect :: original data",templatesData[0]?.total_points," total points ",totalPoints)
-          setMaxPoints(templatesData[0]?.max_points || 0);
-        } else {
-          console.error('Fetched data is not in the expected format:', response);
-        }
-      } catch (error) {
-        console.error('Error fetching templates:', error);
-      }
-    }
-    fetchData();
-  }, []);
-  
-
 
   useEffect(() => {
     const template = templates.find((template) => template.template_id === selectedTemplateID);
     
     if (template) {
-      console.log("useeffect :: template data", template.total_points, " total points ", template.total_points);
       setTotalPoints(template.total_points); // Optionally, keep this for controlled state
       setMaxPoints(template.max_points);    // Optionally, keep this for controlled state
     }
@@ -292,13 +289,45 @@ export default function Home() {
   
 
   const saveDailyProgress = async (template) => {
-    const data=  await service.createDailyProgress({template});
-    console.log(data)
-  }
+    try {
+      const data = await service.createDailyProgress({ template });
+  
+      if (data) {
+        console.log('Daily progress saved successfully...');
+  
+        if (DailyProgresses.length > 31) {
+          // Find the oldest date and delete it
+          const oldestDate = DailyProgresses.reduce((prev, current) =>
+            new Date(prev.date) < new Date(current.date) ? prev : current
+          ).date;
+          await service.deleteDailyProgress(oldestDate);
+        }
+  
+        // Check if the date already exists in daily progress and update it, or add a new one
+        const updatedDailyProgresses = DailyProgresses.some((dp) => dp.date === data.date)
+          ? DailyProgresses.map((dp) => (dp.date === data.date ? data : dp))
+          : [...DailyProgresses, data];
+  
+        setDailyProgresses(updatedDailyProgresses);
+      } else {
+        console.error('Failed to save daily progress...');
+      }
+    } catch (error) {
+      console.error('An error occurred while saving daily progress:', error);
+    }
+  };
+  
 
 
-
-
+  const fetchDailyProgress = async () => {
+    const data = await service.getDailyProgresses();
+    if (data) {
+      setDailyProgresses(data.documents);
+      console.log('Daily progress fetched successfully:', data);
+    } else {
+      console.error('Failed to fetch daily progress...');
+    }
+  };
 
 
 
@@ -356,13 +385,14 @@ export default function Home() {
       totalPoints={totalPoints}
       maxPoints={maxPoints}
       template={template}
-      exampleData={exampleData}
+      DailyProgresses={DailyProgresses}
       updateSelectedTemplate={updateSelectedTemplate}
       updateHabit={updateHabit}
       saveDailyProgress={saveDailyProgress} />}
       
-      {currentPage == 'reportwindow' && <ReportWindow />}
-
+      {currentPage == 'reportwindow' && <ReportWindow 
+      DailyProgresses={DailyProgresses}
+      />}
     </div>
   );
 }

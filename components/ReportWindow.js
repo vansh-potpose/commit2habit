@@ -1,7 +1,7 @@
 import React from 'react'
 import LineChart from './LineChart'
 
-const ReportWindow = () => {
+const ReportWindow = ({DailyProgresses}) => {
     const exampleData = [
         {
           date: '2025-02-01',
@@ -45,7 +45,7 @@ const ReportWindow = () => {
   return (
     <div>
         <div className=' w-full h-[80px] p-10'> 
-            <LineChart data={exampleData} height="70px"  />
+            <LineChart exampleData={DailyProgresses} days={31} height="70px"  />
         </div>
     </div>
   )
