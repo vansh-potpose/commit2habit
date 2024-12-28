@@ -43,10 +43,10 @@ const Page = () => {
             let response;
             if (signingIn) {
                 response = await auth.login({ email, password });
-                console.log('Logged in successfully!', response.userId);
+                console.log('Logged in successfully!');
             } else {
                 response = await auth.createAccount({ email, password, name });
-                console.log('Account created successfully!', response);
+                console.log('Account created successfully!');
 
                 for (let index = 0; index < 3; index++) {
                     await service.createTemplate({

@@ -241,9 +241,9 @@ export default function Home() {
     });
     
     if (updatedTemplate) {
-      console.log('Template updated successfully:', updatedTemplate);
+      console.log('updateSelectedTemplate :: updated template successfully:');
     } else {
-      console.error('Failed to update template:', template);
+      console.error('updateSelectedTemplate :: failed to update template');
     }
   }
 
@@ -290,24 +290,36 @@ export default function Home() {
 
   const saveDailyProgress = async (template) => {
     try {
+      // Save the daily progress for the given template
       const data = await service.createDailyProgress({ template });
   
       if (data) {
         console.log('Daily progress saved successfully...');
   
+        // Remove the oldest entry if the daily progresses exceed the limit of 31
         if (DailyProgresses.length > 31) {
-          // Find the oldest date and delete it
           const oldestDate = DailyProgresses.reduce((prev, current) =>
             new Date(prev.date) < new Date(current.date) ? prev : current
           ).date;
+  
           await service.deleteDailyProgress(oldestDate);
+  
+          // Remove the oldest entry locally
+          newDailyProgresses = DailyProgresses.filter((dp) => dp.date !== oldestDate);
+          setDailyProgresses(newDailyProgresses);
         }
   
-        // Check if the date already exists in daily progress and update it, or add a new one
+        // Update the daily progresses with today's data or add a new entry
         const updatedDailyProgresses = DailyProgresses.some((dp) => dp.date === data.date)
           ? DailyProgresses.map((dp) => (dp.date === data.date ? data : dp))
           : [...DailyProgresses, data];
+
+          //sort the daily progresses by date
+          updatedDailyProgresses.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+          });
   
+        // Update the state with the new daily progresses
         setDailyProgresses(updatedDailyProgresses);
       } else {
         console.error('Failed to save daily progress...');
@@ -317,13 +329,14 @@ export default function Home() {
     }
   };
   
+  
 
 
   const fetchDailyProgress = async () => {
     const data = await service.getDailyProgresses();
     if (data) {
       setDailyProgresses(data.documents);
-      console.log('Daily progress fetched successfully:', data);
+      console.log('Fetched daily progress successfully...');
     } else {
       console.error('Failed to fetch daily progress...');
     }

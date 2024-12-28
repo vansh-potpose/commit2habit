@@ -97,13 +97,11 @@ export class Service {
     async getTemplates() {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
-            console.log("user_id", user_id);
             let result = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteTemplatesCollectionId,
                 [Query.equal('user_id', user_id)]  // Using Query.equal for better readability
             );
-            console.log("result", result);
             for (let i = 0; i < result.documents.length; i++) {
                 result.documents[i].habits = JSON.parse(result.documents[i].habits);
             }
@@ -208,7 +206,6 @@ export class Service {
             // Set the time to midnight UTC to ensure consistency across time zones
             date.setUTCHours(0, 0, 0, 0);
             date = date.toISOString(); // Convert to ISO string in UTC
-            console.log("Adjusted date (UTC):", date);
             // Check if a document exists for the given user and date
             let document = await this.getDailyProgress({ date });
 
@@ -270,7 +267,6 @@ export class Service {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
 
-            console.log("deleteDailyProgress", date);
             let documents = await this.getDailyProgressDocuments({ user_id, date });
 
             if (!documents || documents.documents.length === 0) {

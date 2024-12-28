@@ -58,6 +58,7 @@ const ProgressModal = ({ isOpen, onClose, totalPoints, maxPoints, label, onBack 
               </div>
               
                 
+                    {habit.message!=="" && <div className='flex gap-1 message text-white  text-sm'>message : <div className='text-textColor'>{habit.message}</div></div>}    
                 <div className="relative pt-1 mb-2">
                   <div className="flex">
                     <div
@@ -74,7 +75,6 @@ const ProgressModal = ({ isOpen, onClose, totalPoints, maxPoints, label, onBack 
 
               
               
-            {habit.message!=="" && <div className='flex gap-1 message text-white  text-sm'>message : <div className='text-textColor'>{habit.message}</div></div>}    
             </div>
           ))}
         </div>

@@ -26,11 +26,9 @@ const HabitContainer = ({ template = { habits: [] },updateHabit, updateSelectedT
   
   const save = async () => {
     if (!isEditing) {
-      console.log("saving todays data...\n",template);
       saveDailyProgress(template);
     }else{
       
-      console.log("saving template data...\n",edit_template);
       updateSelectedTemplate(edit_template);
     }
   };
@@ -51,7 +49,6 @@ const HabitContainer = ({ template = { habits: [] },updateHabit, updateSelectedT
         habits: prev.habits.filter((habit) => habit.id !== habitId),
       };
   
-      console.log("Habit removed", updatedTemplate); // Log the updated state here
       return updatedTemplate; // Return the updated state
     });
   };
@@ -74,7 +71,6 @@ const HabitContainer = ({ template = { habits: [] },updateHabit, updateSelectedT
         habits: updatedHabits,
       };
 
-      console.log("Habit updated", updatedTemplate); // Log the updated state here
       return updatedTemplate; // Return the updated state
     }
     );
@@ -96,7 +92,6 @@ const HabitContainer = ({ template = { habits: [] },updateHabit, updateSelectedT
         habits: [...prev.habits, newHabit],
       };
 
-      console.log("Habit added", updatedTemplate); // Log the updated state here
       return updatedTemplate; // Return the updated state
     }
     );

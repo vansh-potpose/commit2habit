@@ -11,7 +11,6 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
   const handleOpenModal = (data) => {
     setModalData(data); // Set the selected data
     setModalOpen(true); // Open the modal
-    console.log('Modal Data:', exampleData);
   };
 
   const handleCloseModal = () => {
@@ -24,7 +23,6 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
 
   useEffect(() => {
     if (!exampleData || !Array.isArray(exampleData)) {
-      console.log('Example Data:', exampleData);
       console.error('exampleData is not valid or missing.');
       return;
     }
@@ -36,7 +34,6 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
       return (today - itemDate) / (1000 * 60 * 60 * 24) <= days;
     });
 
-    console.log('Filtered Data:', filteredData);
 
     const labels = filteredData.map((item) => item.date.split('T')[0]); // Extracting dates
     const percentages = filteredData.map((item) => (item.total_points / item.max_points) * 100); // Calculating percentages
@@ -97,6 +94,7 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
             backgroundColor: '#333',
             titleColor: '#fff',
             bodyColor: '#ddd',
+            whiteSpace: 'pre-wrap',
             callbacks: {
               label: function (context) {
                 const index = context.dataIndex;
@@ -104,7 +102,7 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
                 const failedHabits = habits.filter((h) => h.current !== h.target);
                 return failedHabits
                   .map((h) => `${h.name}: ${h.current}/${h.target}`)
-                  .join('\n') || 'All habits met targets!';
+                  .join('\n\n') || 'All habits met targets!';
               },
             },
           },

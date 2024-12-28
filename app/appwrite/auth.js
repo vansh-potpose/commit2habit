@@ -15,7 +15,6 @@ export class Auth {
   async createAccount({ email, password, name }) {
     try {
       const userId = ID.unique();  // This is only for user creation, not login
-      console.log('Generated userId:', userId); // Debugging output
 
       if (!/^[a-zA-Z0-9._-]{1,36}$/.test(userId)) {
         throw new Error('Generated userId is invalid.');
