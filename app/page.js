@@ -6,6 +6,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import React, { useEffect, useState } from "react";
 import service from "./appwrite/services";
+import SettingsWindow from "@/components/SettingsWindow";
 
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
     service.getAbilities().then((result) => {
       if (result) {
         setStatus(result.documents);
+        console.log(JSON.stringify(result.documents));
       }
     });
 
@@ -384,13 +386,92 @@ export default function Home() {
     },
   ];
 
+
+
+
+
+  // SettingsWindow code part-----------------------------------------------------
+  const ChangeTemplateName=async (template,newName)=>{
+    await service.updateTemplate({
+      template_id: template.template_id,
+      template_name: newName,
+      user_id: template.user_id,
+      max_points: template.max_points,
+      total_points: template.total_points,
+      click_points: template.click_points,
+      habits: template.habits,
+    }).then((result)=>{
+      if(result){
+        console.log('Template name updated successfully');
+        setTemplates((prevTemplates) =>
+        prevTemplates.map((prevTemplate) =>
+          prevTemplate.template_id === template.template_id
+            ? { ...prevTemplate, template_name: newName }
+            : prevTemplate
+        ));
+      }
+    }
+    )
+  }
+
+
+  const ChangeAbilityName=async (ability,newName)=>{
+    await service.updateAbility({
+      ability_id: ability.ability_id,
+      name: newName,
+      current_points: ability.current_points,
+      challenges: ability.challenges,
+    }).then((result)=>{
+      if(result){
+        console.log('Ability name updated successfully');
+        setStatus((prevStatus) =>
+        prevStatus.map((prevAbility) =>
+          prevAbility.ability_id === ability.ability_id
+            ? { ...prevAbility, name: newName }
+            : prevAbility
+        ));
+      }
+    }
+    )
+  }
+
+  const createAbility=async (name)=>{
+    await service.createAbility({
+      name: name,
+      current_points: 0,
+      challenges: [],
+    }).then((result)=>{
+      if(result){
+        console.log('Ability created successfully');
+        setStatus((prevStatus) => [...prevStatus, result]);
+      }
+    }
+    )
+  }
+
+  const DeleteAbility=async (ability_id)=>{
+    await service.deleteAbility(ability_id).then((result)=>{
+      if(result){
+        console.log('Ability deleted successfully');
+        setStatus((prevStatus) => prevStatus.filter((prevAbility) => prevAbility.ability_id !== ability_id));
+      }
+    }
+    )
+  }
   
 
   return (
     <div className="">
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
 
-      {currentPage == 'dashboard' && <Dashboard setStatus={setStatus} deleteChallenge={deleteChallenge} status={status} updateChallenge={updateChallenge} changeCompletedChallenges={changeCompletedChallenges} addChallenge={addChallenge} />}
+      {currentPage == 'dashboard' && <Dashboard 
+      setStatus={setStatus} 
+      deleteChallenge={deleteChallenge} 
+      status={status} 
+      updateChallenge={updateChallenge} 
+      changeCompletedChallenges={changeCompletedChallenges} 
+      addChallenge={addChallenge} />}
+
       {currentPage == 'habitwindow' && <HabitWindow 
       templates={templates}
       selectedTemplateID={selectedTemplateID}
@@ -405,6 +486,14 @@ export default function Home() {
       
       {currentPage == 'reportwindow' && <ReportWindow 
       DailyProgresses={DailyProgresses}
+      />}
+      {currentPage == 'settingswindow' && <SettingsWindow 
+      templates={templates} 
+      status={status} 
+      ChangeTemplateName={ChangeTemplateName} 
+      ChangeAbilityName={ChangeAbilityName} 
+      createAbility={createAbility}
+      DeleteAbility={DeleteAbility}
       />}
     </div>
   );

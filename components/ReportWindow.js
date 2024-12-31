@@ -3,6 +3,8 @@ import LineChart from './LineChart'
 import Heatmap from './Heatmap'
 import Habit from './Habit';
 import HabitReport from './HabitReport';
+import Calendar from './Calendar';
+import RadarChart from './RadarChart'
 
 const ReportWindow = ({ DailyProgresses }) => {
 
@@ -165,6 +167,8 @@ const ReportWindow = ({ DailyProgresses }) => {
     }
   }
 
+   
+
   const overall = output.report.overallProgress
   const habitReport = output.report.habits
   const summary = output.report.summary
@@ -180,6 +184,7 @@ const ReportWindow = ({ DailyProgresses }) => {
         <div className=' w-full h-fit py-7 '>
           <Heatmap reportData={transformedData} />
         </div>
+
         <div className="reasons">
           <h1 className="text-2xl font-bold">Report of habits</h1>
           <div className="bg-black border border-borderColor p-4 rounded-md">
@@ -232,7 +237,7 @@ const ReportWindow = ({ DailyProgresses }) => {
           </div>
         </div>
       </div>
-
+          
 
     </div>
   )
