@@ -6,13 +6,14 @@ import { use } from 'react';
 export class Service {
     client = new Client();
     databases;
-
+    bucket;
 
     constructor() {
         this.client
             .setEndpoint(conf.appwriteUrl)
             .setProject(conf.appwriteProjectId);
         this.databases = new Databases(this.client);
+        this.bucket = new Storage(this.client);
 
 
 
@@ -47,7 +48,7 @@ export class Service {
     async updateTemplate({ template_id, user_id, max_points, total_points, template_name, click_points, habits }) {
         try {
             habits = JSON.stringify(habits);
-            return await this.databases.updateDocument(
+            let result= await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteTemplatesCollectionId,
                 template_id,
@@ -61,6 +62,8 @@ export class Service {
                     habits
                 }
             );
+            result.habits = JSON.parse(result.habits);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: updateTemplate :: error", error);
             return null;  // Returning null to signify an error
@@ -83,11 +86,13 @@ export class Service {
 
     async getTemplate(template_id) {
         try {
-            return await this.databases.listDocuments(
+            let result= await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteTemplatesCollectionId,
                 [Query.equal('template_id', template_id)]  // Using Query.equal for better readability
             );
+            result.documents[0].habits = JSON.parse(result.documents[0].habits);
+            return result.documents[0];
         } catch (error) {
             console.log("Appwrite service :: getTemplate :: error", error, template_id);
             return null;  // Returning null to signify an error
@@ -142,7 +147,7 @@ export class Service {
         try {
             challenges = JSON.stringify(challenges);
             let user_id = (await auth.getCurrentUser()).$id;
-            return await this.databases.updateDocument(
+            let result= await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteAbilitiesCollectionId,
                 ability_id,
@@ -154,6 +159,8 @@ export class Service {
                     challenges
                 }
             );
+            result.challenges = JSON.parse(result.challenges);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: updateAbility :: error", error);
             return null;  // Returning null to signify an error
@@ -223,7 +230,7 @@ export class Service {
 
             // Create a new document
             console.log("daily_progress_id", habits);
-            return await this.databases.createDocument(
+            let result= await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
                 daily_progress_id,
@@ -238,6 +245,8 @@ export class Service {
                     total_points
                 }
             );
+            result.habits = JSON.parse(result.habits);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: createDailyProgress :: error", error);
             return null; // Returning null to signify an error
@@ -247,7 +256,7 @@ export class Service {
 
     async getDailyProgressDocuments({ user_id, date }) {
         try {
-            return await this.databases.listDocuments(
+            let result= await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
                 [
@@ -255,6 +264,10 @@ export class Service {
                     Query.equal('date', date)
                 ]
             );
+            for (let i = 0; i < result.documents.length; i++) {
+                result.documents[i].habits = JSON.parse(result.documents[i].habits);
+            }
+            return result;
         } catch (error) {
             console.log("Appwrite service :: getDailyProgressDocuments :: error", error);
             return null; // Return null on error
@@ -306,7 +319,7 @@ export class Service {
             let { template_id, template_name, habits, max_points, total_points } = template;
             habits = JSON.stringify(habits);
 
-            return await this.databases.updateDocument(
+            let result= await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
                 document.$id,
@@ -318,6 +331,8 @@ export class Service {
                     total_points
                 }
             );
+            result.habits = JSON.parse(result.habits);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: updateDailyProgress :: error", error);
             return null;
@@ -380,6 +395,59 @@ export class Service {
     }
 
 
+
+
+    // file upload services-------------------------------------------------------
+
+    async uploadFile(file){
+        try {
+            let user_id = (await auth.getCurrentUser()).$id;
+            return await this.bucket.createFile(
+                conf.appwriteBucketId,
+                user_id,
+                file
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: uploadFile :: error", error);
+            return false
+        }
+    }
+
+    async deleteFile(fileId){
+        try {
+            await this.bucket.deleteFile(
+                conf.appwriteBucketId,
+                fileId
+            )
+            return true
+        } catch (error) {
+            console.log("Appwrite serive :: deleteFile :: error", error);
+            return false
+        }
+    }
+
+    async getFilePreview(fileId){
+        return this.bucket.getFilePreview(
+            conf.appwriteBucketId,
+            fileId
+        )
+    }
+
+    async getFile(fileId) {
+        try {
+            const file = await this.bucket.getFile(
+                conf.appwriteBucketId,
+                fileId
+            );
+            return file;
+        } catch (error) {
+            console.log("Appwrite service :: getFile :: error", error);
+            return null;
+        }
+    }
+    
+    
+    
 
 
 

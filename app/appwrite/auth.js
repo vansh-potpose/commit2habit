@@ -63,6 +63,26 @@ export class Auth {
       console.log("Appwrite service :: logout :: error", error);
     }
   }
+
+
+  async UpdatePrefs(prefs) {
+    // Validate prefs object
+    if (typeof prefs !== "object" || prefs === null) {
+      throw new Error("Preferences must be a non-null object.");
+    }
+
+    try {
+      // Update preferences
+      await this.account.updatePrefs(prefs);
+
+      // Optionally, fetch and return the updated user object
+      return await this.getCurrentUser();
+    } catch (error) {
+      console.error("Appwrite service :: UpdatePrefs :: error", error);
+      throw error; // Propagate the error for the caller to handle
+    }
+  }
+
 }
 
 const auth = new Auth();

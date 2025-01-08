@@ -24,9 +24,10 @@ const Page = () => {
                 console.error('Error checking user authentication:', error);
             }
         };
-
+    
         checkUser();
-    }, []);
+    }, [router]); // Add router here as a dependency
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,8 +61,8 @@ const Page = () => {
                                 "name": "first habit name",
                                 "description": "description of what will be you doing",
                                 "target": 1,
-                                "current": 1,
-                                "message": "you can edit this message by clicking on it",
+                                "current": 0,
+                                "message": "",
                             }
                         ]
                     }).then((res) => {
@@ -72,8 +73,6 @@ const Page = () => {
                         name: `ability ${index + 1}`,
                         current_points: 0,
                         challenges: [
-                            { "challenge_id": 1, "name": "first challenge", isCompleted: false, points: 5 },
-                            { "challenge_id": 2, "name": "second challenge", isCompleted: false, points: 10 },
                         ]
                     }).then((res) => {
                         console.log(res);

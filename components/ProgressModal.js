@@ -8,7 +8,7 @@ const ProgressModal = ({ isOpen, onClose, totalPoints, maxPoints, label, onBack 
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm flex justify-center items-center z-50 border border-borderColor">
-      <div className="bg-background text-white p-6 rounded-lg max-w-[600px] w-full relative">
+      <div className="bg-background text-white p-6 rounded-lg max-w-[600px] w-full relative max-h-screen overflow-y-auto ">
        
 
         <h2 className="text-2xl font-semibold mb-4">{label}</h2>
@@ -57,8 +57,8 @@ const ProgressModal = ({ isOpen, onClose, totalPoints, maxPoints, label, onBack 
               <span>{habit.current}/{habit.target}</span>
               </div>
               
-                
-                    {habit.message!=="" && <div className='flex gap-1 message text-white  text-sm'>message : <div className='text-textColor'>{habit.message}</div></div>}    
+                    
+                    {habit.message && habit.message.length > 0 && ( <div className='flex gap-1 message text-white  text-sm'>message : <div className='text-textColor'>{habit.message}</div></div>)}    
                 <div className="relative pt-1 mb-2">
                   <div className="flex">
                     <div

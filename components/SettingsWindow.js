@@ -1,8 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
 import OneEditText from './OneEditText';
+import auth from '@/app/appwrite/auth';
 
-const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,createAbility,DeleteAbility}) => {
+const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,createAbility,DeleteAbility,logout,UpdateTitle}) => {
+  const [title, setTitle] = useState('');
   const [newAbility, setNewAbility] = useState('');
   const [content, setcContent] = useState('profile');
 
@@ -18,6 +20,22 @@ const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,c
       DeleteAbility(ability.ability_id);
     }
   }
+
+  const handleTitleChange = (value) => {
+    setTitle(value);
+    
+  }
+
+  const saveTitle = () => {
+    if(title === ''){
+      alert('Title cannot be empty');
+      return;
+    }
+    UpdateTitle(title);
+    console.log(title);
+  }
+  
+
   return (
     <div className='flex justify-center p-6 gap-10'>
       <div className="sidebar text-white w-80 ">
@@ -36,13 +54,23 @@ const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,c
           <div>
             <h1 className='text-2xl text-white pb-2 border-b border-borderColor'>Profile</h1>
             <div className=' flex flex-col gap-4 mt-4'>
-              <label className='text-white'>Name</label>
+              <label className='text-white'>Username</label>
               <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
               <label className='text-white'>Email</label>
-              <input type="email" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
+              <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
               <label className='text-white'>Password</label>
               <input type="password" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
-              <button className='bg-green-700 hover:bg-green-800 p-2 rounded-md w-32 '>Save</button>
+              
+              <label className='text-white'>Title</label>
+              <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' value={title} onChange={(e)=>{handleTitleChange(e.target.value)}}/>
+              <button className='bg-green-700 hover:bg-green-800 p-2 rounded-md w-32 ' onClick={saveTitle}>Save</button>
+            </div>
+            <div className='mt-4'>
+              <h1 className='text-2xl text-white pb-2 border-b border-borderColor'>Danger zone</h1>
+              <div className=' flex flex-col gap-4 mt-4'>
+                
+              <button className='bg-red-500 hover:bg-red-600 p-2 rounded-md w-32 ' onClick={logout}>Logout</button>
+              </div>
             </div>
           </div>}
         {content === 'templates' && 
@@ -80,6 +108,7 @@ const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,c
             </div>
           </div>}
       </div>
+      
     </div>
   )
 }

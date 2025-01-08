@@ -47,7 +47,10 @@ const Habit = (props) => {
     <div className="flex border-borderColor border rounded-md min-w-[500px] justify-between items-center p-3">
       <div className="habitInfo text-sm flex flex-col gap-1" onClick={()=>{handleClick_points()}}>
         <div className="habitName flex items-center gap-3 text-white font-semibold text-base">
-          <img src="/github-mark.svg" alt="habit icon" className="rounded-full w-8" />
+          <div className="overflow-hidden rounded-full w-8 h-8">
+
+          <img src="/icon.jpg" alt="habit icon" className="rounded-full w-8 scale-[130%]" />
+          </div>
           {props.habit.name}
         </div>
         <div className="habitDescription text-white">{props.habit.description}</div>

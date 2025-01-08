@@ -5,13 +5,12 @@ import Challenges from './Challenges'
 import RadarChart from './RadarChart'
 import Calendar from './Calendar'
 
-const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge }) => {
+const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge, user }) => {
     const [currentAbility, setCurrentAbility] = useState({})
     const [showingChallenges, setshowingChallenges] = useState(false)
     const [level, setLevel] = useState(0)
 
     
-
     useEffect(() => {
         if (Object.keys(currentAbility).length > 0) {
             setshowingChallenges(true)
@@ -60,8 +59,8 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
                     </div>
                     <div className='flex flex-grow items-center justify-between' >
                         <div className='' >
-                            <h1 className='name font-semibold text-lg'>Sung Jin Woo</h1>
-                            <p className={`${showingChallenges ? "text-xs" : ""}`}>Title : Web Developer</p>
+                            <h1 className='name font-semibold text-lg'>{user.name}</h1>
+                            <p className={`${showingChallenges ? "text-xs" : ""}`}>Title : {user.prefs.title}</p>
                         </div>
                         {showingChallenges && <h1 className='text-lg font-semibold'>lvl : {level}</h1>}
                     </div>
