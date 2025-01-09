@@ -5,7 +5,7 @@ import Challenges from './Challenges'
 import RadarChart from './RadarChart'
 import Calendar from './Calendar'
 
-const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge, user }) => {
+const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge, user,profile_pic }) => {
     const [currentAbility, setCurrentAbility] = useState({})
     const [showingChallenges, setshowingChallenges] = useState(false)
     const [level, setLevel] = useState(0)
@@ -54,9 +54,8 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
                 <div className={`profile_info flex ${showingChallenges ? "flex-row items-center gap-3 flex-grow w-full px-1" : "flex-col"} `}>
 
 
-                    <div className={`image_container ${showingChallenges ? "w-16 h-16 mt-5" : "w-80 h-80"} rounded-full object-center overflow-hidden border border-borderColor mb-5`}>
-                        <img className='object-contain' src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f358078c-71d6-4c9c-8f8d-ee4c154fcc4b/delzpsb-9c75cdf2-eb11-46df-8436-066aaa45739a.png/v1/fill/w_1280,h_1627/jin_woo_profile_by_elsyjbn_300_delzpsb-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTYyNyIsInBhdGgiOiJcL2ZcL2YzNTgwNzhjLTcxZDYtNGM5Yy04ZjhkLWVlNGMxNTRmY2M0YlwvZGVsenBzYi05Yzc1Y2RmMi1lYjExLTQ2ZGYtODQzNi0wNjZhYWE0NTczOWEucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.R5Ryaqcb7aCzvIXvVwaxcZhWQZAm_glpySzk8CbBnfY" alt="profile" />
-                    </div>
+                        <img className={`image_container ${showingChallenges ? "w-16 h-16 mt-5" : "w-80 h-80"} rounded-full object-center overflow-hidden border border-borderColor mb-5 object-cover `} src={profile_pic||"/profile.png"} alt="profile" />
+                        
                     <div className='flex flex-grow items-center justify-between' >
                         <div className='' >
                             <h1 className='name font-semibold text-lg'>{user.name}</h1>

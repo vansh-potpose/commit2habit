@@ -45,6 +45,10 @@ export default function Home() {
         } catch (error) {
           console.error('Error fetching templates:', error);
         }
+        
+        
+
+        
       }
       await fetchData();
 
@@ -65,72 +69,71 @@ export default function Home() {
 
 
 
-  const changeCompletedChallenges = (challenge_id, isCompleted) => {
+  const changeCompletedChallenges = async (challenge_id, isCompleted) => {
     setStatus((prevStatus) =>
       prevStatus.map((ability) => {
+        let updatedCurrentPoints = ability.current_points; // Track changes to points
         const updatedChallenges = ability.challenges.map((challenge) => {
           if (challenge.challenge_id === challenge_id) {
+            // Adjust points only if the completion status is changing
             if (challenge.isCompleted !== isCompleted) {
-              // If status is changing (completed <=> incomplete), adjust current_points
               const pointChange = isCompleted ? challenge.points : -challenge.points;
-              ability.current_points += pointChange; // Adjust the ability's current points
-
-              service.updateAbility({
-                ability_id: ability.ability_id,
-                name: ability.name,
-                current_points: ability.current_points,
-                challenges: ability.challenges.map((ch) =>
-                  ch.challenge_id === challenge_id
-                    ? { ...ch, isCompleted }
-                    : ch
-                ),
-              });
+              updatedCurrentPoints += pointChange; // Update tracked points
             }
-            return { ...challenge, isCompleted }; // Update the completion status
+            return { ...challenge, isCompleted }; // Update challenge status
           }
           return challenge;
         });
-        return { ...ability, challenges: updatedChallenges };
+  
+        // Only send updates to the service if there are changes
+        if (updatedCurrentPoints !== ability.current_points) {
+          service.updateAbility({
+            ability_id: ability.ability_id,
+            name: ability.name,
+            current_points: updatedCurrentPoints,
+            challenges: updatedChallenges,
+          });
+        }
+  
+        return { ...ability, current_points: updatedCurrentPoints, challenges: updatedChallenges };
       })
     );
   };
-
+  
   const updateChallenge = (challenge_id, updatedData) => {
     setStatus((prevStatus) =>
       prevStatus.map((ability) => {
+        let updatedCurrentPoints = ability.current_points; // Track changes to points
         const updatedChallenges = ability.challenges.map((challenge) => {
           if (challenge.challenge_id === challenge_id) {
             let pointDifference = 0;
-
-            // If the challenge is already completed, adjust points based on the updated points
+  
+            // Calculate the point difference if the challenge is completed and points are updated
             if (updatedData.points !== undefined && challenge.isCompleted) {
               pointDifference = updatedData.points - challenge.points;
+              updatedCurrentPoints += pointDifference; // Adjust points
             }
-
-            // Update the challenge's points and adjust current_points if it's completed
-            if (pointDifference !== 0) {
-              ability.current_points += pointDifference;
-            }
-
-            service.updateAbility({
-              ability_id: ability.ability_id,
-              name: ability.name,
-              current_points: ability.current_points,
-              challenges: ability.challenges.map((ch) =>
-                ch.challenge_id === challenge_id
-                  ? { ...ch, ...updatedData }
-                  : ch
-              ),
-            });
-
-            return { ...challenge, ...updatedData }; // Update the challenge data
+  
+            return { ...challenge, ...updatedData }; // Update challenge with new data
           }
           return challenge;
         });
-        return { ...ability, challenges: updatedChallenges };
+  
+        // Only send updates to the service if there are changes
+        if (updatedCurrentPoints !== ability.current_points || updatedData.points !== undefined) {
+          service.updateAbility({
+            ability_id: ability.ability_id,
+            name: ability.name,
+            current_points: updatedCurrentPoints,
+            challenges: updatedChallenges,
+          });
+        }
+  
+        return { ...ability, current_points: updatedCurrentPoints, challenges: updatedChallenges };
       })
     );
   };
+  
 
   const deleteChallenge = (challenge_id) => {
     setStatus((prevStatus) =>
@@ -138,17 +141,22 @@ export default function Home() {
         const updatedChallenges = ability.challenges.filter(
           (challenge) => challenge.challenge_id !== challenge_id
         );
-        service.updateAbility({
-          ability_id: ability.ability_id,
-          name: ability.name,
-          current_points: ability.current_points,
-          challenges: updatedChallenges,
-        });
-
+  
+        // Only update the service if the challenges array has changed
+        if (updatedChallenges.length !== ability.challenges.length) {
+          service.updateAbility({
+            ability_id: ability.ability_id,
+            name: ability.name,
+            current_points: ability.current_points,
+            challenges: updatedChallenges,
+          });
+        }
+  
         return { ...ability, challenges: updatedChallenges };
       })
     );
-  }
+  };
+  
 
   const addChallenge = async (abilityName) => {
     try {
@@ -408,21 +416,15 @@ export default function Home() {
           body: JSON.stringify({ content: content }),
         });
         const data = await res.json();
-        console.log("output", data.content);
         setReportData(JSON.parse(data.content));
-        console.log("reportData", reportData);
       } catch (error) {
         console.error(error);
       }
     };
     GenerateReport();
   }
-    , [DailyProgresses]);
+  , [DailyProgresses]);
 
-  useEffect(() => {
-    if (reportData) {
-    }
-  }, [reportData]);
 
 
 
@@ -511,6 +513,12 @@ export default function Home() {
         const user = await auth.getCurrentUser();
         if (user) {
           setUser(user);
+          service.getFilePreview(user.$id).then((result) => {
+            if (result) {
+              setProfile_pic(result);
+            }
+          }
+          )
         }else{
           router.push('/login');
         }
@@ -520,7 +528,7 @@ export default function Home() {
     };
 
     checkUser();
-  }, []);
+  }, [router]);
 
   const logout = async () => {
     try {
@@ -542,6 +550,46 @@ export default function Home() {
     )
   }
 
+  useEffect(() => {
+    async function loadImage() {
+        if (user) {
+            const previewUrl = await service.getFilePreview(user.$id);
+            if (previewUrl) {
+                setProfile_pic(previewUrl);
+            }
+        }
+    }
+    loadImage();
+}, [user]);
+
+const uploadProfilePic = async (file) => {
+  try {
+    // Delete the existing file associated with the user
+    const deleteResult = await service.deleteFile(user.$id);
+    if (deleteResult) {
+      console.log("Profile pic deleted successfully");
+    }
+
+    // Upload the new file
+    const uploadResult = await service.uploadFile(file);
+    if (uploadResult) {
+      console.log("Profile pic uploaded successfully");
+
+      // Retrieve and update the profile picture preview
+      const previewUrl = await service.getFilePreview(user.$id);
+      if (previewUrl) {
+        setProfile_pic(previewUrl);
+        console.log("Profile pic updated successfully");
+      }
+    }
+  } catch (error) {
+    console.error("Error uploading profile pic:", error);
+  }
+};
+
+
+
+
 
 
 
@@ -562,7 +610,8 @@ export default function Home() {
         status={status}
         updateChallenge={updateChallenge}
         changeCompletedChallenges={changeCompletedChallenges}
-        addChallenge={addChallenge} />}
+        addChallenge={addChallenge}
+        profile_pic={profile_pic} />}
 
       {currentPage == 'habitwindow' && <HabitWindow
         templates={templates}
@@ -590,6 +639,8 @@ export default function Home() {
         DeleteAbility={DeleteAbility}
         logout={logout}
         UpdateTitle={UpdateTitle}
+        uplodadProfilePic={uplodadProfilePic}
+        profile_pic={profile_pic}
       />}
       {currentPage == 'lodingWindow' && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <Image src="/lodingScreen-unscreen.gif" width={300} height={100} />

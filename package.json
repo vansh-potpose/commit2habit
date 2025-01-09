@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d out",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -16,6 +16,7 @@
     "chart.js": "^4.4.7",
     "chartjs-adapter-date-fns": "^3.0.0",
     "dayjs": "^1.11.13",
+    "gh-pages": "^6.3.0",
     "groq-sdk": "^0.9.1",
     "next": "14.2.15",
     "react": "^18",

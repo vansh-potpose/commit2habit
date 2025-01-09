@@ -24,7 +24,7 @@ export class Service {
             habits = JSON.stringify(habits);
             let user_id = (await auth.getCurrentUser()).$id;
             let template_id = ID.unique();
-            return await this.databases.createDocument(
+            let result= await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteTemplatesCollectionId,
                 template_id,  // Auto-generate the document ID
@@ -39,6 +39,8 @@ export class Service {
 
                 }
             );
+            result.habits = JSON.parse(result.habits);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: createTemplate :: error", error);
             return null;  // Returning null to signify an error
@@ -125,7 +127,7 @@ export class Service {
             let user_id = (await auth.getCurrentUser()).$id;
 
             let ability_id = ID.unique();
-            return await this.databases.createDocument(
+            let result= await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteAbilitiesCollectionId,
                 ability_id,  // Auto-generate the document ID
@@ -137,6 +139,8 @@ export class Service {
                     challenges
                 }
             );
+            result.challenges = JSON.parse(result.challenges);
+            return result;
         } catch (error) {
             console.log("Appwrite service :: createAbility :: error", error);
             return null;  // Returning null to signify an error
@@ -405,7 +409,7 @@ export class Service {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
                 user_id,
-                file
+                file,
             )
         } catch (error) {
             console.log("Appwrite serive :: uploadFile :: error", error);

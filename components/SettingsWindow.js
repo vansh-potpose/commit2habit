@@ -3,10 +3,11 @@ import { useState } from 'react'
 import OneEditText from './OneEditText';
 import auth from '@/app/appwrite/auth';
 
-const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,createAbility,DeleteAbility,logout,UpdateTitle}) => {
+const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,createAbility,DeleteAbility,logout,UpdateTitle,uplodadProfilePic,profile_pic}) => {
   const [title, setTitle] = useState('');
   const [newAbility, setNewAbility] = useState('');
   const [content, setcContent] = useState('profile');
+  const [file, setFile] = useState(null);
 
   const createAbilityMini = (name) => {
     if(name === '') return;
@@ -34,6 +35,15 @@ const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,c
     UpdateTitle(title);
     console.log(title);
   }
+
+  const handleFileSave = () => {
+    if(file === null){
+      alert('Please select a file');
+      return;
+    }
+    uplodadProfilePic(file);
+    setFile(null)
+  }
   
 
   return (
@@ -54,16 +64,23 @@ const SettingsWindow = ({templates,status,ChangeTemplateName,ChangeAbilityName,c
           <div>
             <h1 className='text-2xl text-white pb-2 border-b border-borderColor'>Profile</h1>
             <div className=' flex flex-col gap-4 mt-4'>
-              <label className='text-white'>Username</label>
-              <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
-              <label className='text-white'>Email</label>
-              <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
-              <label className='text-white'>Password</label>
-              <input type="password" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' />
               
+              <label className='text-white'>Profile picture</label>
+              <div className=''>
+
+              <img src={profile_pic||"/profile.png"} alt="profile" className='object-cover rounded-full object-center overflow-hidden border border-borderColor mb-5 w-80 h-80'/>
+              </div>
+              <div className='flex gap-2'>
+              <input type="file" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' onChange={(e)=>{setFile(e.target.files[0])}}/>
+              <button className='bg-green-700 hover:bg-green-800 p-2 rounded-md w-32 ' onClick={()=>{uplodadProfilePic(file)}}>Upload</button>
+              </div>
+              
+            
               <label className='text-white'>Title</label>
+              <div className='flex gap-2'>
               <input type="text" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' value={title} onChange={(e)=>{handleTitleChange(e.target.value)}}/>
               <button className='bg-green-700 hover:bg-green-800 p-2 rounded-md w-32 ' onClick={saveTitle}>Save</button>
+              </div>
             </div>
             <div className='mt-4'>
               <h1 className='text-2xl text-white pb-2 border-b border-borderColor'>Danger zone</h1>
