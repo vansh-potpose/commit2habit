@@ -20,7 +20,7 @@ const Navbar = ({setCurrentPage,currentPage,user}) => {
                 </Link>
                 
 
-                <Image src="./icon2.jpg" className='w-9 h-9' alt="Github Logo" width={50} height={50} />
+                <Image src="/icon2.jpg" className='w-9 h-9' alt="Github Logo" width={50} height={50} />
                 {user ? <p className="text-white flex gap-2"> <p className='text-textColor'>{user.name}</p>/ <p>Commit2Habit</p></p> : <p className="text-white">Commit2Habit</p>}
             </div>
             <div className="rightNav flex items-center gap-4">

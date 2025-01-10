@@ -49,7 +49,7 @@ const Habit = (props) => {
         <div className="habitName flex items-center gap-3 text-white font-semibold text-base">
           <div className="overflow-hidden rounded-full w-8 h-8">
 
-          <img src="./icon.jpg" alt="habit icon" className="rounded-full w-8 scale-[130%]" />
+          <img src="/icon.jpg" alt="habit icon" className="rounded-full w-8 scale-[130%]" />
           </div>
           {props.habit.name}
         </div>

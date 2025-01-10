@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output:"export"
+    basePath: "/commit2habit",
+    output: "export",
+    reactStrictMode: true,
 };
 export default nextConfig;

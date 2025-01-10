@@ -643,7 +643,7 @@ const uploadProfilePic = async (file) => {
         profile_pic={profile_pic}
       />}
       {currentPage == 'lodingWindow' && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <Image src="./lodingScreen-unscreen.gif" width={300} height={100} />
+        <Image src="/lodingScreen-unscreen.gif" width={300} height={100} />
       </div>}
     </div>
   );

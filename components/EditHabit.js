@@ -33,7 +33,7 @@ const EditHabit = ({ habit, handleUpdate, removeHabit }) => {
       <div className="text-sm flex flex-col gap-1">
         <div className="flex items-center gap-3 text-white font-semibold text-base">
           <img
-            src="./icon.jpg"
+            src="/icon.jpg"
             alt="habit icon"
             className="rounded-full w-8"
           />
