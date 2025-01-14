@@ -23,17 +23,17 @@ const HabitWindow = (
 
 
   return (
-    <div className='m-auto  w-11/12 p-4'>
+    <div className='m-auto  md:w-11/12 p-4 '>
       <div className='border-b border-borderColor w-full my-2'>
-        <select className='w-full text-left bg-transparent cursor-pointer outline-none appearance-none text-2xl px-2 py-1 font-bold text-white'
+        <select className='w-full text-left bg-transparent cursor-pointer outline-none appearance-none md:text-2xl text-xl px-2 py-1 font-bold text-white'
          value={selectedTemplateID} onChange={(e) => {setselectedTemplateID(e.target.value)}}>
-          <option value="" disabled>
+          <option className='max-w-full md:text-2xl text-base' value="" disabled>
             Select a Template
           </option>
           {templates.map((template, i) => (
             <option
               key={i}
-              className='bg-background outline-none border border-borderColor'
+              className='bg-background md:text-2xl text-base max-w-full outline-none border border-borderColor'
               value={template.template_id}
             >
               {template.template_name}
@@ -42,7 +42,7 @@ const HabitWindow = (
         </select>
          
       </div>
-      <div className='flex justify-between  gap-6'>
+      <div className='flex xl:flex-row flex-col-reverse items-center xl:items-start xl:justify-between  gap-6'>
 
         <HabitContainer 
         template={template}
@@ -51,7 +51,7 @@ const HabitWindow = (
         saveDailyProgress={saveDailyProgress}
         />
 
-        <div className='w-1/2 mt-2 flex flex-col   items-center gap-2'>
+        <div className='xl:w-1/2 w-full mt-2 flex flex-col items-center gap-2'>
           <ProgressBar score={totalPoints} maxScore={maxPoints} />
           <LineChart exampleData={DailyProgresses} days={7} height='150px' />
         </div>

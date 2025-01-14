@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react'
 import EditableText from './EditableText'
 import { useState } from 'react'
+import ModalConfirmation from './ModalConfirmation'
 
-const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChallenges, updateChallenge ,deleteChallenge}) => {
+const CheckboxElement = ({ id, name, isCompleted, points, changeCompletedChallenges, updateChallenge, deleteChallenge }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentName, setCurrentName] = useState(name);
     const [currentPoints, setCurrentPoints] = useState(points);
     const [current_state, setCurrent_state] = useState(isCompleted)
+    const [showModal, setShowModal] = useState(false);
+    
 
     useEffect(() => {
         setCurrentName(name)
@@ -22,7 +25,7 @@ const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChalleng
     }
 
     const handleSave = () => {
-        updateChallenge(id, {name:currentName, points:currentPoints})
+        updateChallenge(id, { name: currentName, points: currentPoints })
         setIsEditing(false)
     }
     const handleCancel = () => {
@@ -31,13 +34,10 @@ const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChalleng
         setCurrentPoints(points)
     }
     const handleDelete = () => {
-        let confirmDelete = window.confirm('Are you sure you want to delete this challenge?\n\nnote: if you delete completed challege your points will remain the same.')
-        if (confirmDelete){
-            deleteChallenge(id)
-        }
+        setShowModal(true)
     }
     return (
-        <div className='group challenge border border-borderColor p-3 rounded-md flex justify-between items-center'>
+        <div className='group challenge border border-borderColor p-3 rounded-md flex   justify-between  xl:flex-row md:flex-col md:gap-2 md:items-start sm:flex-row sm:items-center flex-col gap-2 items-start'>
             <div className="left flex items-center gap-2">
                 <input
                     type="checkbox"
@@ -47,13 +47,13 @@ const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChalleng
                 />
 
                 <p className={`font-semibol  ${isCompleted && "line-through"}`}>
-                    {isEditing ? <input type="text" value={currentName} onChange={(e) => setCurrentName(e.target.value)} className="bg-transparent w-80" />
+                    {isEditing ? <input type="text" value={currentName} onChange={(e) => setCurrentName(e.target.value)} className="bg-transparent " />
                         : currentName}
                 </p>
 
 
             </div>
-            <div className="right flex items-center gap-4">
+            <div className="right flex items-center gap-4  xl:flex-row md:flex-row-reverse sm:flex-row  flex-row-reverse">
                 {isEditing ?
                     <div className='flex gap-4 '>
 
@@ -65,7 +65,7 @@ const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChalleng
                         </div>
                     </div> : <div className='flex gap-4 group-hover:opacity-100 opacity-0 ease-in-out duration-100'>
 
-                        <div onClick={()=>{handleDelete()}} className='hover:bg-red-500 bg-borderColor  p-1 rounded-md  ease-in-out duration-200'>
+                        <div onClick={() => { handleDelete() }} className='hover:bg-red-500 bg-borderColor  p-1 rounded-md  ease-in-out duration-200'>
                             <svg xmlns="http://www.w3.org/2000/svg" heigh t="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                         </div>
                         <div onClick={() => { setIsEditing(true) }} className='hover:bg-blue-500 p-1 bg-borderColor rounded-md ease-in-out duration-200'>
@@ -77,10 +77,17 @@ const CheckboxElement = ({id, name, isCompleted, points, changeCompletedChalleng
                 }
 
                 <p className='min-w-5  text-center'>
-                    {isEditing ? <input type="number" value={currentPoints} onChange={(e) => handlePointsChange(e)} className="w-12 text-center bg-transparent outline-none" />
-                        : currentPoints}
+                    {isEditing ? <p className=' flex'><p className='xl:hidden md:block sm:hidden  block'>Points :</p><input type="number" value={currentPoints} onChange={(e) => handlePointsChange(e)} className="w-12 text-center bg-transparent outline-none" /></p>
+                        : <p className=' flex gap-2'><p className='xl:hidden md:block sm:hidden  block'>Points :</p> {currentPoints}</p>}
                 </p>
             </div>
+            <ModalConfirmation
+                isOpen={showModal}
+                onConfirm={()=>{deleteChallenge(id)}}
+                onCancel={() => setShowModal(false)}
+                title="Delete Challenge"
+                message={`Are you sure you want to delete the challenge "${currentName}"?`}
+            />
         </div>
     )
 }

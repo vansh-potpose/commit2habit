@@ -55,8 +55,8 @@ const Heatmap = ({ reportData }) => {
   };
 
   return (
-    <div className="p-6 bg-black shadow-md rounded-lg border border-borderColor overflow-x-auto">
-      <div className="top flex items-center mb-4 gap-8">
+    <div className="p-6  bg-black shadow-md rounded-lg border border-borderColor overflow-x-auto">
+      <div className="top flex items-center mb-4 gap-8 ">
         <h2 className="text-2xl font-bold text-white">Habit Completion Heatmap</h2>
         <label className="inline-flex items-center cursor-pointer">
           <input
@@ -73,12 +73,12 @@ const Heatmap = ({ reportData }) => {
       </div>
 
       {/* Days Row */}
-      <div className="flex items-center gap-1 mb-2 pl-36">
+      <div className="flex items-center gap-1 mb-2 2xl:pl-36 xl:pl-4 pl-36">
         {dates.map((date) => {
           const day = new Date(date).getDate();
           const month = new Date(date).toLocaleString("default", { month: "short" });
           return (
-            <div key={date} className="w-9 text-xs text-textColor text-center">
+            <div key={date} className="xl:w-9 w-6 text-xs text-textColor text-center">
               {day === 1 ? `${day} ${month}` : day}
             </div>
           );
@@ -88,7 +88,7 @@ const Heatmap = ({ reportData }) => {
       {/* Habit Rows */}
       <div className="space-y-4">
         {habits.map((habit) => (
-          <div key={habit} className="flex items-center space-x-4">
+          <div key={habit} className="flex 2xl:items-center space-x-4 2xl:flex-row xl:flex-col flex-row">
             <div className="w-32 font-medium text-white truncate">{habit}</div>
             <div className="flex gap-1">
               {dates.map((date) => {
@@ -103,7 +103,7 @@ const Heatmap = ({ reportData }) => {
                 return (
                   <div
                     key={date}
-                    className={`w-9 h-9 rounded-md ${bgColor} hover:scale-110 transition-transform`}
+                    className={`xl:w-9 xl:h-9 w-6 h-6 rounded-md ${bgColor} hover:scale-110 transition-transform`}
                     title={`${habit} on ${date}: ${completion}%`}
                   ></div>
                 );
@@ -155,7 +155,7 @@ Heatmap.propTypes = {
             current: PropTypes.number.isRequired,
             message: PropTypes.string,
           })
-        ).isRequired,
+        ).isRequired, 
       })
     ).isRequired,
   }).isRequired,

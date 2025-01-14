@@ -11,7 +11,7 @@ const ProgressBar = ({ score, maxScore }) => {
       setProgress(calculatedProgress);
     }, 100);
   }, [score, maxScore]);
-
+ 
   return (
     <div className="flex flex-col  p-2 w-full bg-background border border-borderColor rounded-md justify-center">
       <h3 className="text-white text-lg">Total Points:</h3>

@@ -156,12 +156,12 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
   }, [exampleData, days]); // Adding exampleData and days as dependencies
 
   return (
-    <div className="bg-transparent w-full rounded-lg border border-borderColor p-2">
+    <div className=" bg-transparent w-full rounded-lg border border-borderColor p-2">
       <h2 className="text-lg w-fit text-white mx-auto">Performance Line Chart</h2>
       <canvas
         id="lineChart"
         style={{ width, height }}
-        className="mx-auto"
+        className="mx-auto "
       ></canvas>
 
       {/* Modal */}

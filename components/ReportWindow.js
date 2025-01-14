@@ -18,13 +18,19 @@ const ReportWindow = ({ DailyProgresses ,reportData,transformDataByHabitNames}) 
   return (
     <div className='mb-1'>
 
-      <div className='px-5'>
+      <div className='sm:px-5 px-2'>
 
-        <div className=' w-full h-fit py-10 '>
+        <div className=' w-full overflow-x-auto  h-fit py-10 '>
+          <div className=' min-w-[1000px] '>
+
           <LineChart exampleData={DailyProgresses} days={31} height="70px" />
+          </div>
         </div>
-        <div className=' w-full h-fit py-7 '>
+        <div className=' w-full overflow-x-auto   h-fit py-7 '>
+          <div className='min-w-[1100px]'>
+
           <Heatmap reportData={transformedData} />
+          </div>
         </div>
 
        <Report reportData={reportData} />

@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: '480px', // Add the `xs` breakpoint for extra small screens
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

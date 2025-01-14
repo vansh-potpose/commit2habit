@@ -9,12 +9,19 @@ import service from "./appwrite/services";
 import SettingsWindow from "@/components/SettingsWindow";
 import auth from "./appwrite/auth";
 import { useRouter } from 'next/navigation';
+import AlertModal from "@/components/AlertModal";
+import PromptModal from "@/components/AddChallengeModal";
+import AddChallengeModal from "@/components/AddChallengeModal";
 
 
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState('lodingWindow');
-  const [profile_pic,setProfile_pic]=useState("");
+  const [profile_pic, setProfile_pic] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', message: '' });
+  const [isAddChallengeModalOpen, setIsAddChallengeModalOpen] = useState(false);
+  const [currentAbility, setCurrentAbility] = useState('');
 
   // loading initial data-----------------------------------------------------
   useEffect(() => {
@@ -45,10 +52,10 @@ export default function Home() {
         } catch (error) {
           console.error('Error fetching templates:', error);
         }
-        
-        
 
-        
+
+
+
       }
       await fetchData();
 
@@ -84,7 +91,7 @@ export default function Home() {
           }
           return challenge;
         });
-  
+
         // Only send updates to the service if there are changes
         if (updatedCurrentPoints !== ability.current_points) {
           service.updateAbility({
@@ -94,12 +101,12 @@ export default function Home() {
             challenges: updatedChallenges,
           });
         }
-  
+
         return { ...ability, current_points: updatedCurrentPoints, challenges: updatedChallenges };
       })
     );
   };
-  
+
   const updateChallenge = (challenge_id, updatedData) => {
     setStatus((prevStatus) =>
       prevStatus.map((ability) => {
@@ -107,18 +114,18 @@ export default function Home() {
         const updatedChallenges = ability.challenges.map((challenge) => {
           if (challenge.challenge_id === challenge_id) {
             let pointDifference = 0;
-  
+
             // Calculate the point difference if the challenge is completed and points are updated
             if (updatedData.points !== undefined && challenge.isCompleted) {
               pointDifference = updatedData.points - challenge.points;
               updatedCurrentPoints += pointDifference; // Adjust points
             }
-  
+
             return { ...challenge, ...updatedData }; // Update challenge with new data
           }
           return challenge;
         });
-  
+
         // Only send updates to the service if there are changes
         if (updatedCurrentPoints !== ability.current_points || updatedData.points !== undefined) {
           service.updateAbility({
@@ -128,12 +135,12 @@ export default function Home() {
             challenges: updatedChallenges,
           });
         }
-  
+
         return { ...ability, current_points: updatedCurrentPoints, challenges: updatedChallenges };
       })
     );
   };
-  
+
 
   const deleteChallenge = (challenge_id) => {
     setStatus((prevStatus) =>
@@ -141,7 +148,7 @@ export default function Home() {
         const updatedChallenges = ability.challenges.filter(
           (challenge) => challenge.challenge_id !== challenge_id
         );
-  
+
         // Only update the service if the challenges array has changed
         if (updatedChallenges.length !== ability.challenges.length) {
           service.updateAbility({
@@ -151,66 +158,50 @@ export default function Home() {
             challenges: updatedChallenges,
           });
         }
-  
+
         return { ...ability, challenges: updatedChallenges };
       })
     );
   };
-  
+
 
   const addChallenge = async (abilityName) => {
+    setCurrentAbility(abilityName);
+    setIsAddChallengeModalOpen(true);
+  };
+
+  const handleAddChallengeSubmit = async ({ name, points }) => {
     try {
-      // Prompt for the challenge name
-      let name = prompt("Enter the name of the new challenge:");
-      if (!name || name.trim() === "") {
-        alert("Challenge name cannot be empty. Please try again.");
-        return; // Exit if the user cancels or enters an invalid name
-      }
-      name = name.trim(); // Clean up any extra spaces
-
-      // Prompt for the challenge points
-      let pointsInput = prompt("Enter the points for the new challenge:");
-      let points = parseInt(pointsInput);
-      if (isNaN(points) || points <= 0) {
-        alert("Invalid points. Please enter a positive number.");
-        return; // Exit if the user cancels or enters an invalid number
-      }
-
       const newChallenge = {
-        challenge_id: Date.now(), // Generate a unique ID for the challenge
-        name: name,
+        challenge_id: Date.now(),
+        name,
         isCompleted: false,
-        points: Number(points),
+        points,
       };
 
-      // Find the matching ability and add the challenge via the service
       const updatedStatus = await Promise.all(
         status.map(async (ability) => {
-          if (ability.name === abilityName) {
+          if (ability.name === currentAbility) {
             const updatedChallenges = [...ability.challenges, newChallenge];
-
-            // Update the ability in the service
             await service.updateAbility({
-              ability_id: ability.ability_id, // Ensure ability ID is part of your data model
+              ability_id: ability.ability_id,
               name: ability.name,
-              current_points: ability.current_points, // No change in points initially
+              current_points: ability.current_points,
               challenges: updatedChallenges,
             });
-
-            // Return the updated ability locally
             return { ...ability, challenges: updatedChallenges };
           }
-          return ability; // Return unchanged abilities
+          return ability;
         })
       );
 
-      // Update local state after successfully updating the service
       setStatus(updatedStatus);
-
-      alert(`New challenge "${name}" with ${points} points added successfully!`);
+      setModalContent({ title: 'Success', message: `New challenge "${name}" with ${points} points added successfully!` });
+      setShowModal(true);
     } catch (error) {
-      console.error("An error occurred while adding the challenge:", error);
-      alert("Something went wrong while adding the challenge. Please try again.");
+      console.error("Error adding challenge:", error);
+      setModalContent({ title: 'Error', message: 'Failed to add the challenge. Please try again.' });
+      setShowModal(true);
     }
   };
 
@@ -423,7 +414,7 @@ export default function Home() {
     };
     GenerateReport();
   }
-  , [DailyProgresses]);
+    , [DailyProgresses]);
 
 
 
@@ -519,7 +510,7 @@ export default function Home() {
             }
           }
           )
-        }else{
+        } else {
           router.push('/login');
         }
       } catch (error) {
@@ -540,8 +531,8 @@ export default function Home() {
     }
   };
 
-  const UpdateTitle =async (title) => {
-    await auth.UpdatePrefs({title: title}).then((result) => {
+  const UpdateTitle = async (title) => {
+    await auth.UpdatePrefs({ title: title }).then((result) => {
       if (result) {
         console.log('Title updated successfully');
         setUser(result);
@@ -552,40 +543,40 @@ export default function Home() {
 
   useEffect(() => {
     async function loadImage() {
-        if (user) {
-            const previewUrl = await service.getFilePreview(user.$id);
-            if (previewUrl) {
-                setProfile_pic(previewUrl);
-            }
+      if (user) {
+        const previewUrl = await service.getFilePreview(user.$id);
+        if (previewUrl) {
+          setProfile_pic(previewUrl);
         }
-    }
-    loadImage();
-}, [user]);
-
-const uploadProfilePic = async (file) => {
-  try {
-    // Delete the existing file associated with the user
-    const deleteResult = await service.deleteFile(user.$id);
-    if (deleteResult) {
-      console.log("Profile pic deleted successfully");
-    }
-
-    // Upload the new file
-    const uploadResult = await service.uploadFile(file);
-    if (uploadResult) {
-      console.log("Profile pic uploaded successfully");
-
-      // Retrieve and update the profile picture preview
-      const previewUrl = await service.getFilePreview(user.$id);
-      if (previewUrl) {
-        setProfile_pic(previewUrl);
-        console.log("Profile pic updated successfully");
       }
     }
-  } catch (error) {
-    console.error("Error uploading profile pic:", error);
-  }
-};
+    loadImage();
+  }, [user]);
+
+  const uploadProfilePic = async (file) => {
+    try {
+      // Delete the existing file associated with the user
+      const deleteResult = await service.deleteFile(user.$id);
+      if (deleteResult) {
+        console.log("Profile pic deleted successfully");
+      }
+
+      // Upload the new file
+      const uploadResult = await service.uploadFile(file);
+      if (uploadResult) {
+        console.log("Profile pic uploaded successfully");
+
+        // Retrieve and update the profile picture preview
+        const previewUrl = await service.getFilePreview(user.$id);
+        if (previewUrl) {
+          setProfile_pic(previewUrl);
+          console.log("Profile pic updated successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading profile pic:", error);
+    }
+  };
 
 
 
@@ -593,9 +584,9 @@ const uploadProfilePic = async (file) => {
 
 
 
-    
 
-  
+
+
 
 
 
@@ -639,12 +630,25 @@ const uploadProfilePic = async (file) => {
         DeleteAbility={DeleteAbility}
         logout={logout}
         UpdateTitle={UpdateTitle}
-        uplodadProfilePic={uplodadProfilePic}
+        uploadProfilePic={uploadProfilePic}
         profile_pic={profile_pic}
       />}
       {currentPage == 'lodingWindow' && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <Image src="/lodingScreen-unscreen.gif" width={300} height={100} />
       </div>}
+      <AlertModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={modalContent.title}
+        message={modalContent.message} />
+
+      <AddChallengeModal
+        abilityName={currentAbility}
+        isOpen={isAddChallengeModalOpen}
+        onClose={() => setIsAddChallengeModalOpen(false)}
+        onSubmit={handleAddChallengeSubmit}
+      />
+
     </div>
   );
 }

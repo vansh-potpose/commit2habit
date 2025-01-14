@@ -9,7 +9,7 @@ const HabitContainer = ({ template = { habits: [] }, updateHabit, updateSelected
   const [isSaving, setIsSaving] = useState(false);
 
   const [edit_template, setEdit_template] = useState(template);
-
+ 
 
   useEffect(() => {
     setEdit_click_points(template.click_points || 0); // Sync when template changes
@@ -120,30 +120,30 @@ const HabitContainer = ({ template = { habits: [] }, updateHabit, updateSelected
 
 
   return (
-    <div className="w-1/2">
+    <div className="xl:w-1/2 w-full">
       <div className="flex gap-2 pb-4 pt-2 justify-between flex-row-reverse">
-        <div className="flex gap-2">
+        <div className="flex gap-2 xs:text-base text-sm ">
           <button
-            className="bg-buttonColor border border-borderColor hover:bg-[#262c36] text-white rounded-md font-medium px-3 py-1"
+            className="bg-buttonColor border border-borderColor  hover:bg-[#262c36] text-white rounded-md font-medium xs:px-3 px-2 py-1"
             onClick={() => setIsEditing((prev) => !prev)}
           >
             {isEditing ? 'Exit Editing' : 'Edit Template'}
           </button>
           {isSaving ? <div className="w-[132px] h-[34px]  flex items-center justify-center  bg-[#238636] border border-borderColor hover:bg-[#29903b] text-white rounded-md font-medium object-center overflow-hidden"><img className='w-[70px] scale-150' src='/lodingScreen-unscreen.gif'></img></div>:
           <button
-            className="bg-[#238636] w-[132px]  border border-borderColor hover:bg-[#29903b] text-white rounded-md font-medium px-3 py-1"
+            className="bg-[#238636] max-w-[132px]  border border-borderColor hover:bg-[#29903b] text-white rounded-md font-medium xs:px-3 px-2 py-1"
             onClick={save}  
           >
             {isEditing ? 'Save Template' : 'Save Progress'}
           </button>
         }
         </div>
-        <div className="flex gap-2">
-          <button className="flex items-center bg-buttonColor border border-borderColor hover:bg-[#262c36] text-white rounded-md font-medium px-3 py-1">
+        <div className="flex gap-2 xs:text-base text-sm">
+          <button className="flex items-center bg-buttonColor border border-borderColor hover:bg-[#262c36] text-white rounded-md font-medium xs:px-3 px-2 py-1">
             Click points+:{' '}
             {!isEditing ? (
               <div className="text-gray-400 pl-2">{template.click_points}</div>
-            ) : (
+            ) : ( 
               <EditableText
                 value={edit_template.click_points}
                 onChange={(value) => setEdit_click_points(Number(value))}
