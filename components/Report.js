@@ -64,7 +64,7 @@ const Report = ({ reportData }) => {
 
                     <div className="ml-4">
                         <h2 className="text-xl font-semibold text-gray-300 mb-2">Recommendations:</h2>
-                        <ol className="list-decimal list-inside sm:pl-6 pl-2 text-gray-400 space-y-2">
+                        <ol className="list-decimal list-inside sm:pl-6 pl-2 text-gray-400 space-y-2 ">
                             {summary.recommendations.map((item, index) => (
                                 <li key={index} className="text-base">{item}</li>
                             ))}
