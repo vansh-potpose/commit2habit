@@ -24,7 +24,7 @@ const ReportWindow = ({ DailyProgresses ,reportData,transformDataByHabitNames}) 
         <div className=' w-full overflow-x-auto  h-fit py-10 '>
           <div className=' min-w-[1000px] '>
 
-          <LineChart exampleData={DailyProgresses} days={31} height="70px" />
+          <LineChart exampleData={DailyProgresses} days={31} height="400px" />
           </div>
         </div>
         <div className=' w-full overflow-x-auto   h-fit py-7 '>
