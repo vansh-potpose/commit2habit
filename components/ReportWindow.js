@@ -27,7 +27,7 @@ const ReportWindow = ({ DailyProgresses ,reportData,transformDataByHabitNames}) 
           <LineChart exampleData={DailyProgresses} days={31} height="400px" />
           </div>
         </div>
-        <div className=' w-full overflow-x-auto   h-fit py-7 '>
+        <div className=' w-full overflow-x-auto  h-fit py-7 '>
           <div className='min-w-[1100px]'>
 
           <Heatmap reportData={transformedData} />
