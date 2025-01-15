@@ -54,7 +54,7 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
                         <div className='flex flex-grow items-center justify-between' >
                             <div className='' >
                                 <h1 className='name font-semibold text-lg'>{user.name}</h1>
-                                <p className={`${showingChallenges ? "text-xs" : "md:text-base text-xs"}`}>Title : {user.prefs.title}</p>
+                                <p className={`${showingChallenges ? "text-xs" : "md:text-base text-xs"}`}>Title : {user?.prefs.title || "None"}</p>
                             </div>
                              <h1 className={`${showingChallenges?"":"md:hidden"} text-lg font-semibold`}>lvl : {level}</h1>
                         </div>
