@@ -67,7 +67,6 @@ const SettingsWindow = ({ templates, status, ChangeTemplateName, ChangeAbilityNa
         <ul className="sidebar-menu space-y-3 border-y border-borderColor py-3">
           <li className='hover:bg-buttonColor py-1 px-3 rounded-md' onClick={() => { setcContent('profile'),setShowSettings(false) }}>Profile</li>
           <li className='hover:bg-buttonColor py-1 px-3 rounded-md' onClick={() => { setcContent('templates'),setShowSettings(false) }}>Templates</li>
-          <li className='hover:bg-buttonColor py-1 px-3 rounded-md' onClick={() => { setcContent('dailyprogress'),setShowSettings(false) }}>Daily progress</li>
           <li className='hover:bg-buttonColor py-1 px-3 rounded-md' onClick={() => { setcContent('abilities'),setShowSettings(false) }}>Abilities & skills</li>
         </ul>
       </div>
@@ -119,7 +118,7 @@ const SettingsWindow = ({ templates, status, ChangeTemplateName, ChangeAbilityNa
           </div>}
           {content === 'abilities' && (
           <div>
-            <h1 className="text-2xl text-white pb-2 border-b">Abilities & Skills</h1>
+            <h1 className="text-2xl sm:pl-0 pl-10 text-white pb-2 border-b">Abilities & Skills</h1>
             <div className="flex flex-col gap-4 mt-4">
               <label className="text-white">Abilities</label>
               <div className="flex flex-col gap-2">
