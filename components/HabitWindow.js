@@ -51,7 +51,7 @@ const HabitWindow = (
         saveDailyProgress={saveDailyProgress}
         />
 
-        <div className='xl:w-1/2 w-full mt-2 flex flex-col items-center gap-2'>
+        <div className='xl:w-1/2 w-full mt-2  flex flex-col items-center gap-2'>
           <ProgressBar score={totalPoints} maxScore={maxPoints} />
           <LineChart exampleData={DailyProgresses} days={7} height={`${window.matchMedia('(max-width: 600px)').matches?"190px":"300px"}`} />
         </div>
