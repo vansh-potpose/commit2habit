@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect } from 'react'
 import EditableText from './EditableText'
 import { useState } from 'react'

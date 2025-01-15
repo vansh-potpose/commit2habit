@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 const ProgressModal = ({ isOpen, onClose, totalPoints, maxPoints, label, onBack, template }) => {

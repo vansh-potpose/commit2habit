@@ -1,4 +1,5 @@
 // components/Calendar.js
+'use client';
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
 
