@@ -65,8 +65,6 @@ const Page = () => {
                                 "message": "",
                             }
                         ]
-                    }).then((res) => {
-                        console.log(res);
                     })
 
                     await service.createAbility({
@@ -74,8 +72,6 @@ const Page = () => {
                         current_points: 0,
                         challenges: [
                         ]
-                    }).then((res) => {
-                        console.log(res);
                     })
                 }
             }

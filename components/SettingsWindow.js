@@ -51,7 +51,6 @@ const SettingsWindow = ({ templates, status, ChangeTemplateName, ChangeAbilityNa
       return;
     }
     UpdateTitle(title);
-    console.log(title);
   }
 
   

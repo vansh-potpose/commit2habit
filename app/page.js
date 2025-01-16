@@ -303,7 +303,6 @@ export default function Home() {
     try {
       // Save the daily progress for the given template
       let data = await service.createDailyProgress({ template });
-      console.log('data', data);
       if (data) {
         console.log('Daily progress saved successfully...');
 
@@ -409,7 +408,6 @@ export default function Home() {
           const entryDate = new Date(entry.date);
           return entryDate >= sevenDaysAgo && entryDate <= currentDate;
         });
-        console.log("Last 7 days data:", last7DaysData);
   
         // Now, transform the data for the last 7 days
         const content = JSON.stringify(transformDataByHabitNames(last7DaysData));
@@ -423,7 +421,6 @@ export default function Home() {
         });
   
         const data = await res.json();
-        console.log("Report data:", data);
         
         // Set the report data
         setReportData(JSON.parse(data.content));

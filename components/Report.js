@@ -11,7 +11,6 @@ const Report = ({ reportData }) => {
         !reportData.report.habits ||
         !reportData.report.summary
     ) {
-        console.log(reportData)
         return <h1 className="text-red-500 text-xl font-bold">Error: Report data is not available or incorrect.</h1>;
     }
 
