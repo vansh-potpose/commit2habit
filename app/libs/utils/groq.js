@@ -5,7 +5,7 @@ const groq = new Groq({
 });
 
 export const reqGroqAI = async (content) => {
-    let input=`provide me a json only (without any text above or below it for description just json and also analyse the reasons of failing the habits) report in the following format by analysing the given data:{
+    let input=`provide me a json only (without any text above or below it , only json content and also analyse the reasons of failing the habits) report in the following format by analysing the given data:{
   "report": {
     "overallProgress": {
       "trend": "Description of overall performance trend over the period.",
@@ -61,60 +61,3 @@ export const reqGroqAI = async (content) => {
   return res;
 };
 
-
-// import Groq from "groq-sdk";
-
-// const groq = new Groq({
-//   apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
-// });
-
-// export const reqGroqAI = async (content) => {
-//   const input = `provide me a json only (without any text above or below it for description just json and also analyse the reasons of failing the habits) report in the following format by analysing the given data:{ ... }`; // your existing input string
-  
-//   // Function to make the API request
-//   const makeRequest = async () => {
-//     try {
-//       const res = await groq.chat.completions.create({
-//         messages: [
-//           {
-//             role: "user",
-//             content: input,
-//           },
-//         ],
-//         model: "llama-3.2-90b-vision-preview",
-//       });
-
-//       // If the rate limit is exceeded (status 429), retry after the specified time
-//       if (res.status === 429) {
-//         const retryAfter = res.headers.get('retry-after') || 30; // Default to 30 seconds if retry-after is missing
-//         console.log(`Rate limit exceeded. Retrying after ${retryAfter} seconds...`);
-        
-//         // Wait for the retry duration and then retry the request
-//         await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-//         return makeRequest(); // Retry the request
-//       }
-
-//       if (!res.ok) {
-//         // Handle non-429 errors gracefully
-//         throw new Error(`Groq API request failed with status: ${res.status}`);
-//       }
-
-//       // Extract the raw response text and clean it
-//       const responseText = await res.text();
-      
-//       // Clean the response text to remove any extra descriptions or text like "Here is the output json"
-//       const cleanedResponse = responseText.replace(/^(.*?{)/, '{').replace(/}.*$/, '}'); // Strip out unwanted prefix or suffix text
-
-//       // Parse the cleaned response as JSON
-//       const jsonResponse = JSON.parse(cleanedResponse);
-
-//       return jsonResponse;
-//     } catch (error) {
-//       console.error("Error during Groq API request:", error);
-//       throw new Error("Unable to retrieve data from Groq API due to an unexpected error");
-//     }
-//   };
-
-//   // Call the makeRequest function
-//   return await makeRequest();
-// };

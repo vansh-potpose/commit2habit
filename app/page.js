@@ -397,8 +397,23 @@ export default function Home() {
 
   useEffect(() => {
     const GenerateReport = async () => {
-      const content = JSON.stringify(transformDataByHabitNames(DailyProgresses));
       try {
+        // Get the current date and calculate the date for 7 days ago
+        const currentDate = new Date();
+        const sevenDaysAgo = new Date(currentDate);
+        sevenDaysAgo.setDate(currentDate.getDate() - 7);
+  
+        // Filter DailyProgresses to include only the last 7 days based on the "date" field
+        const last7DaysData = DailyProgresses.filter((entry) => {
+          // Parse the date string into a Date object
+          const entryDate = new Date(entry.date);
+          return entryDate >= sevenDaysAgo && entryDate <= currentDate;
+        });
+        console.log("Last 7 days data:", last7DaysData);
+  
+        // Now, transform the data for the last 7 days
+        const content = JSON.stringify(transformDataByHabitNames(last7DaysData));
+  
         const res = await fetch("/api/groq", {
           method: "POST",
           headers: {
@@ -406,15 +421,20 @@ export default function Home() {
           },
           body: JSON.stringify({ content: content }),
         });
+  
         const data = await res.json();
+        console.log("Report data:", data);
+        
+        // Set the report data
         setReportData(JSON.parse(data.content));
       } catch (error) {
-        console.error(error);
+        console.error("Error generating report:", error);
       }
     };
+  
     GenerateReport();
-  }
-    , [DailyProgresses]);
+  }, [DailyProgresses]);
+  
 
 
 
