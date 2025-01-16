@@ -45,7 +45,7 @@ Commit2Habit is a powerful habit-tracking app designed to help you stay on top o
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/commit2habit.git
+   git clone https://github.com/vansh-potpose/commit2habit.git
    ```
 2. Navigate to the project directory:
    ```bash
