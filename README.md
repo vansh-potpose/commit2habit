@@ -62,3 +62,7 @@ Commit2Habit is a powerful habit-tracking app designed to help you stay on top o
 
 ## Contribution
 I am relatively new to web development, and while I’ve worked hard on this project, I am aware that there are many areas where it can be improved. From potential bugs to inefficiencies in the code, I’d truly appreciate any feedback, suggestions, or contributions to help make Commit2Habit better. If you spot something that could be improved or want to add features, feel free to fork the repository and submit a pull request. Your help is highly valued!
+
+---
+
+**Stay committed to your habits and level up your life with Commit2Habit!**
