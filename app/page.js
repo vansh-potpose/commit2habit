@@ -610,7 +610,7 @@ export default function Home() {
 
   return (
     <div className="">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} />
+      {currentPage!=='lodingWindow' && <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} />}
       {currentPage == 'dashboard' && <Dashboard
         user={user}
         setStatus={setStatus}
