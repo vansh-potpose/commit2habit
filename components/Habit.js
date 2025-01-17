@@ -65,7 +65,7 @@ const Habit = (props) => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleSaveMessage}
               onBlur={handleSaveMessage}
-              className=" text-sm bg-transparent outline-none rounded-md p-1"
+              className="sm:w-80  border  text-sm bg-transparent outline-none rounded-md p-1"
               autoFocus
             />
           </div>
