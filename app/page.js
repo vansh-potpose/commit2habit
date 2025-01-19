@@ -400,7 +400,7 @@ export default function Home() {
         // Get the current date and calculate the date for 7 days ago
         const currentDate = new Date();
         const sevenDaysAgo = new Date(currentDate);
-        sevenDaysAgo.setDate(currentDate.getDate() - 7);
+        sevenDaysAgo.setDate(currentDate.getDate() - 8);
   
         // Filter DailyProgresses to include only the last 7 days based on the "date" field
         const last7DaysData = DailyProgresses.filter((entry) => {
