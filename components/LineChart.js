@@ -32,7 +32,7 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
     const today = new Date();
     const filteredData = exampleData.filter((item) => {
       const itemDate = new Date(item.date);
-      return (today - itemDate) / (1000 * 60 * 60 * 24) <= days;
+      return (today - itemDate) / (1000 * 60 * 60 * 24) <= days+1;
     });
 
 
