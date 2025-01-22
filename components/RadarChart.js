@@ -90,9 +90,8 @@ const RadarChartFromAbilities = ({ data }) => {
             size: 12, // Reduced font size for better fitting
           },
           padding: 15, // Padding between the labels and the chart
-          // Use a callback function to truncate the labels if too long
           callback: function (value) {
-            if (value.length > 10) { // Limit the length of ability names
+            if (value.length > 10) {
               return value.substring(0, 10) + '...'; // Truncate to 10 chars
             }
             return value;

@@ -50,20 +50,26 @@ const LineChart = ({ width = '100%', height = '320px', exampleData, days }) => {
       id: 'gradientZone',
       beforeDraw: (chart) => {
         const { ctx, chartArea, scales } = chart;
+    
+        if (!scales.y || !chartArea) {
+          return; // Safely exit if scales or chartArea is not defined
+        }
+    
         ctx.save();
-
+    
         const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
         gradient.addColorStop(0, '#c000ff');
         gradient.addColorStop(1, 'rgba(192, 0, 255, 0)');
-
+    
         ctx.fillStyle = gradient;
-
-        const yPosition = scales.y.getPixelForValue(75);
+    
+        const yPosition = scales.y.getPixelForValue(75); // Check for scales.y existence
         ctx.fillRect(chartArea.left, yPosition, chartArea.width, chartArea.bottom - yPosition);
-
+    
         ctx.restore();
       },
     };
+    
 
     Chart.register(gradientZonePlugin);
 
