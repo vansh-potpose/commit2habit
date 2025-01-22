@@ -451,6 +451,103 @@ export class Service {
     }
     
     
+
+
+    // Task functions--------------------------------------------------------------
+    async createTasks(task) {
+        try {
+            let user_id = (await auth.getCurrentUser()).$id;
+            let task_id = ID.unique();
+            // Ensure tasks is a valid JSON string
+            let tasks =await JSON.stringify(task);
+            console.log("tasks in sevives", tasks,task);
+    
+            let result = await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteTasksCollectionId,
+                task_id,
+                {
+                    user_id,
+                    tasks,
+                    task_id,
+                }
+            );
+            
+            // Parse tasks back if necessary
+            result.tasks = JSON.parse(result.tasks);
+            return result;
+        } catch (error) {
+            console.log("Appwrite service :: createTask :: error", error);
+            return null;
+        }
+    }
+    
+    
+    
+
+    async updateTasks( tasks) {
+        try {
+            let t= await this.getTasks();
+            let user_id = t.user_id;
+            let task_id = t.task_id;
+            
+            tasks=JSON.stringify(tasks);
+            let result= await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteTasksCollectionId,
+                task_id,
+                {
+                    user_id,
+                    task_id,
+                    tasks 
+                }
+            );
+            result.tasks = JSON.parse(result.tasks);
+            return result;
+        } catch (error) {
+            console.log("Appwrite service :: updateTask :: error", error);
+            return null;  // Returning null to signify an error
+        }
+    }
+    
+    async deleteTasks(task_id) {
+        try {
+            await this.databases.deleteDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteTasksCollectionId,
+                task_id
+            );
+            return true;
+        } catch (error) {
+            console.log("Appwrite service :: deleteTask :: error", error);
+            return false;  // Returning false to signify failure
+        }
+    }
+
+    async getTasks() {
+        try {
+            let user_id = (await auth.getCurrentUser()).$id;
+    
+            let result = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteTasksCollectionId,
+                [Query.equal('user_id', user_id)]
+            );
+    
+            // Safely parse tasks for each document
+            result.documents = result.documents.map((doc) => {
+                if (doc.tasks) {
+                    doc.tasks = JSON.parse(doc.tasks);
+                }
+                return doc;
+            });
+            
+            return result.documents[0];
+        } catch (error) {
+            console.log("Appwrite service :: getTask :: error", error);
+            return null;
+        }
+    }
     
 
 

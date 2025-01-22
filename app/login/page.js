@@ -73,6 +73,8 @@ const Page = () => {
                         challenges: [
                         ]
                     })
+
+
                 }
             }
             router.push('/');

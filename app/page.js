@@ -608,6 +608,8 @@ export default function Home() {
 
 
 
+
+
   return (
     <div className="">
       {currentPage!=='lodingWindow' && <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} />}
@@ -619,7 +621,8 @@ export default function Home() {
         updateChallenge={updateChallenge}
         changeCompletedChallenges={changeCompletedChallenges}
         addChallenge={addChallenge}
-        profile_pic={profile_pic} />}
+        profile_pic={profile_pic}
+        />}
 
       {currentPage == 'habitwindow' && <HabitWindow
         templates={templates}
