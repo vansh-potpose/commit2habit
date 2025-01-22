@@ -54,7 +54,7 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
 
 
   return (
-    <div className="w-full flex flex-col items-center justify-center overflow-x-hidden">
+    <div className="w-full flex flex-col gap-5 items-center justify-center overflow-x-hidden">
       <div className="flex justify-center w-full items-start">
         <div
           className={`flex mx-auto justify-center ${showingChallenges ? 'flex-col items-center' : 'md:flex-row flex-col md:my-14 my-8'}`}
@@ -122,10 +122,12 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
         )}
       </div>
 
+        { !showingChallenges && 
       <div className="flex lg:flex-row lg:items-start flex-col items-center  gap-4 overflow-x-auto">
         <Calendar />
         <RadarChart data={abilities} />
       </div>
+}
     </div>
   );
 };

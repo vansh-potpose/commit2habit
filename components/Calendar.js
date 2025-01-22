@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 import EditableText from './EditableText';
 import service from '@/app/appwrite/services';
@@ -41,21 +41,38 @@ const Calendar = () => {
     getTasks();
   }, []);
 
-  // Sync tasks with the backend
-  useEffect(() => {
-    const updateTasks = async () => {
-      try {
-        await service.updateTasks(tasks);
-      } catch (error) {
-        console.error('Error updating tasks:', error);
-      }
-    };
-
-    updateTasks();
+  // Save tasks manually
+  const saveTasks = useCallback(async () => {
+    try {
+      await service.updateTasks(tasks);
+      console.log('Tasks saved successfully');
+    } catch (error) {
+      console.error('Error saving tasks:', error);
+    }
   }, [tasks]);
 
-  const toggleTaskCompletion = (taskIndex) => {
+  // Debounce function to reduce rapid calls
+  const debounce = (fn, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
+    };
+  };
+
+  const debouncedSaveTasks = useCallback(debounce(saveTasks, 500), [saveTasks]);
+
+  // Update tasks with manual save
+  const updateTasks = (updater) => {
     setTasks((prev) => {
+      const updatedTasks = updater(prev);
+      debouncedSaveTasks(); // Save tasks after the update
+      return updatedTasks;
+    });
+  };
+
+  const toggleTaskCompletion = (taskIndex) => {
+    updateTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks[taskIndex] = {
         ...updatedTasks[taskIndex],
@@ -67,7 +84,7 @@ const Calendar = () => {
 
   const updateTaskName = (taskIndex, newName) => {
     if (!newName.trim()) return; // Prevent empty task names
-    setTasks((prev) => {
+    updateTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks[taskIndex].name = newName;
       return { ...prev, [selectedDate]: updatedTasks };
@@ -75,7 +92,7 @@ const Calendar = () => {
   };
 
   const deleteTask = (taskIndex) => {
-    setTasks((prev) => {
+    updateTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks.splice(taskIndex, 1);
       return { ...prev, [selectedDate]: updatedTasks };
@@ -83,7 +100,7 @@ const Calendar = () => {
   };
 
   const addTask = () => {
-    setTasks((prev) => ({
+    updateTasks((prev) => ({
       ...prev,
       [selectedDate]: [
         ...(prev[selectedDate] || []),
@@ -99,7 +116,7 @@ const Calendar = () => {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={handlePrevMonth}
-            className="text-[#8b949e] hover:text-[#58a6ff] transition-transform transform hover:scale-110 duration-200"
+            className="text-textColor hover:text-linkColor transition-transform transform hover:scale-110 duration-200"
           >
             &lt;
           </button>
@@ -108,7 +125,7 @@ const Calendar = () => {
           </h2>
           <button
             onClick={handleNextMonth}
-            className="text-[#8b949e] hover:text-[#58a6ff] transition-transform transform hover:scale-110 duration-200"
+            className="text-textColor hover:text-linkColor transition-transform transform hover:scale-110 duration-200"
           >
             &gt;
           </button>
@@ -117,7 +134,7 @@ const Calendar = () => {
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div
               key={day}
-              className="text-xs font-bold text-center uppercase text-[#8b949e] tracking-wide"
+              className="text-xs font-bold text-center uppercase text-svgColor tracking-wide"
             >
               {day}
             </div>
@@ -130,8 +147,10 @@ const Calendar = () => {
             return (
               <div
                 key={index}
-                onClick={() =>{ if (!dayObj.date) return; 
-                setSelectedDate(dayObj.date)}}
+                onClick={() => {
+                  if (!dayObj.date) return;
+                  setSelectedDate(dayObj.date);
+                }}
                 className={`h-10 w-10 flex items-center justify-center rounded-lg relative shadow-inner ${
                   dayObj.date
                     ? 'bg-[#1e222a] text-[#c9d1d9] border border-[#30363d]'
@@ -188,8 +207,10 @@ const Calendar = () => {
                 onClick={() => deleteTask(index)}
                 className="text-xs text-red-500 hover:underline"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" heigh t="24px" viewBox="0 0 24 24" width="24px" fill="#ef4444"><path d="M0 0h24v24H0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
-
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ef4444">
+                  <path d="M0 0h24v24H0z" fill="none" />
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                </svg>
               </button>
             </div>
           ))}
