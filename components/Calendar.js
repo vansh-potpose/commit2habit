@@ -109,6 +109,10 @@ const Calendar = () => {
     }));
   };
 
+  const areAllTasksCompleted = (daysTasks) => {
+    return daysTasks.every(task => task.isCompleted);
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-5 w-fit bg-black p-4 rounded-xl">
       {/* Calendar */}
@@ -172,7 +176,7 @@ const Calendar = () => {
               >
                 {dayObj.day > 0 && dayObj.day <= daysInMonth ? dayObj.day : ''}
                 {dayTasks.length > 0 && (
-                  <div className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-[#ffcc00]"></div>
+                  <div className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${areAllTasksCompleted(dayTasks) ? 'bg-[#3cb371]' : 'bg-[#ffcc00]'}`}></div>
                 )}
               </div>
             );
