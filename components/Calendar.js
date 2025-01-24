@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 import EditableText from './EditableText';
 import service from '@/app/appwrite/services';
 
-const Calendar = () => {
-  const [tasks, setTasks] = useState({});
+const Calendar = ({tasks,setTasks}) => {
+  // const [tasks, setTasks] = useState({});
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs().format('D-M-YY'));
   const today = dayjs().format('D-M-YY');
@@ -28,18 +28,7 @@ const Calendar = () => {
   const handleNextMonth = () => setCurrentDate(currentDate.add(1, 'month'));
 
   // Fetch tasks from the service
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        const res = await service.getTasks();
-        setTasks(res.tasks || {});
-      } catch (error) {
-        console.error('Error getting tasks:', error);
-      }
-    };
-
-    getTasks();
-  }, []);
+  
 
   // Save tasks manually
   const saveTasks = useCallback(async () => {
@@ -51,22 +40,11 @@ const Calendar = () => {
     }
   }, [tasks]);
 
-  // Debounce function to reduce rapid calls
-  const debounce = (fn, delay) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-    };
-  };
-
-  const debouncedSaveTasks = useCallback(debounce(saveTasks, 500), [saveTasks]);
-
   // Update tasks with manual save
   const updateTasks = (updater) => {
     setTasks((prev) => {
       const updatedTasks = updater(prev);
-      debouncedSaveTasks(); // Save tasks after the update
+      saveTasks(); // Save tasks immediately after the update
       return updatedTasks;
     });
   };
@@ -110,7 +88,7 @@ const Calendar = () => {
   };
 
   const areAllTasksCompleted = (daysTasks) => {
-    return daysTasks.every(task => task.isCompleted);
+    return daysTasks.every((task) => task.isCompleted);
   };
 
   return (
@@ -176,7 +154,13 @@ const Calendar = () => {
               >
                 {dayObj.day > 0 && dayObj.day <= daysInMonth ? dayObj.day : ''}
                 {dayTasks.length > 0 && (
-                  <div className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${areAllTasksCompleted(dayTasks) ? 'bg-[#3cb371]' : 'bg-[#ffcc00]'}`}></div>
+                  <div
+                    className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
+                      areAllTasksCompleted(dayTasks)
+                        ? 'bg-[#3cb371]'
+                        : 'bg-[#ffcc00]'
+                    }`}
+                  ></div>
                 )}
               </div>
             );
@@ -191,10 +175,7 @@ const Calendar = () => {
         </div>
         <div>
           {(tasks[selectedDate] || []).map((task, index) => (
-            <div
-              key={index}
-              className="TaskList__task flex items-center gap-2 mb-2"
-            >
+            <div key={index} className="TaskList__task flex items-center gap-2 mb-2">
               <input
                 type="checkbox"
                 checked={task.isCompleted}
@@ -219,15 +200,15 @@ const Calendar = () => {
             </div>
           ))}
           {!(tasks[selectedDate] || []).length && (
-            <div className="text-sm text-[#8b949e]">No tasks for this date.</div>
+            <div className="text-sm text-[#8b949e]">No tasks for today</div>
           )}
+          <button
+            onClick={addTask}
+            className="bg-[#2d333b] hover:bg-[#3c444d] text-white py-2 px-4 mt-4 rounded-xl w-full"
+          >
+            Add Task
+          </button>
         </div>
-        <button
-          onClick={addTask}
-          className="mt-4 px-4 py-2 bg-[#21262d] text-[#58a6ff] rounded-lg hover:bg-[#30363d] transition"
-        >
-          Add Task
-        </button>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import RadarChart from './RadarChart';
 import Calendar from './Calendar';
 import service from '@/app/appwrite/services';
 
-const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge, user, profile_pic }) => {
+const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallenge, deleteChallenge, addChallenge, user, profile_pic,tasks,setTasks}) => {
   const [currentAbility, setCurrentAbility] = useState({});
   const [showingChallenges, setshowingChallenges] = useState(false);
   const [level, setLevel] = useState(0);
@@ -124,7 +124,10 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
 
         { !showingChallenges && 
       <div className="flex lg:flex-row lg:items-start flex-col items-center  gap-4 overflow-x-auto">
-        <Calendar />
+        <Calendar
+        tasks={tasks}
+        setTasks={setTasks}
+         />
         <RadarChart data={abilities} />
       </div>
 }

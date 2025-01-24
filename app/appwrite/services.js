@@ -212,7 +212,6 @@ export class Service {
         try {
             let user_id = (await auth.getCurrentUser()).$id;
             let date = new Date(); // Full ISO format
-            console.log("Initial date:", date);
 
             // Set the time to midnight UTC to ensure consistency across time zones
             date.setUTCHours(0, 0, 0, 0);
@@ -233,7 +232,6 @@ export class Service {
             let daily_progress_id = ID.unique(); // Example: User-based unique ID
 
             // Create a new document
-            console.log("daily_progress_id", habits);
             let result= await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteDailyProgressCollectionId,
@@ -460,7 +458,6 @@ export class Service {
             let task_id = ID.unique();
             // Ensure tasks is a valid JSON string
             let tasks =await JSON.stringify(task);
-            console.log("tasks in sevives", tasks,task);
     
             let result = await this.databases.createDocument(
                 conf.appwriteDatabaseId,
