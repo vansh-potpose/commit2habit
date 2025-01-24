@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 import EditableText from './EditableText';
 import service from '@/app/appwrite/services';
 
-const Calendar = ({tasks,setTasks}) => {
-  // const [tasks, setTasks] = useState({});
+const Calendar = () => {
+  const [tasks, setTasks] = useState({});
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs().format('D-M-YY'));
   const today = dayjs().format('D-M-YY');
@@ -28,7 +28,18 @@ const Calendar = ({tasks,setTasks}) => {
   const handleNextMonth = () => setCurrentDate(currentDate.add(1, 'month'));
 
   // Fetch tasks from the service
-  
+  useEffect(() => {
+    const getTasks = async () => {
+      try {
+        const res = await service.getTasks();
+        setTasks(res.tasks || {});
+      } catch (error) {
+        console.error('Error getting tasks:', error);
+      }
+    };
+
+    getTasks();
+  }, []);
 
   // Save tasks manually
   const saveTasks = useCallback(async () => {

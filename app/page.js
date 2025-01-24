@@ -4,7 +4,7 @@ import HabitWindow from "@/components/HabitWindow";
 import ReportWindow from "@/components/ReportWindow";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import service from "./appwrite/services";
 import SettingsWindow from "@/components/SettingsWindow";
 import auth from "./appwrite/auth";
@@ -12,8 +12,6 @@ import { useRouter } from 'next/navigation';
 import AlertModal from "@/components/AlertModal";
 import PromptModal from "@/components/AddChallengeModal";
 import AddChallengeModal from "@/components/AddChallengeModal";
-import dayjs from 'dayjs';
-
 
 
 
@@ -72,21 +70,7 @@ export default function Home() {
 
   // dashbboard code part-----------------------------------------------------
   const [status, setStatus] = useState([]);
-  const [tasks, setTasks] = useState({});
-  
-  
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        const res = await service.getTasks();
-        setTasks(res.tasks || {});
-      } catch (error) {
-        console.error('Error getting tasks:', error);
-      }
-    };
 
-    getTasks();
-  }, []);
 
 
 
@@ -638,10 +622,6 @@ export default function Home() {
         changeCompletedChallenges={changeCompletedChallenges}
         addChallenge={addChallenge}
         profile_pic={profile_pic}
-
-        tasks={tasks}
-        setTasks={setTasks}
-        
         />}
 
       {currentPage == 'habitwindow' && <HabitWindow
