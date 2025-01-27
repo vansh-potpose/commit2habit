@@ -4,8 +4,7 @@ import dayjs from 'dayjs';
 import EditableText from './EditableText';
 import service from '@/app/appwrite/services';
 
-const Calendar = () => {
-  const [tasks, setTasks] = useState({});
+const Calendar = ({ tasks, setTasks }) => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs().format('D-M-YY'));
   const today = dayjs().format('D-M-YY');
@@ -27,90 +26,79 @@ const Calendar = () => {
   const handlePrevMonth = () => setCurrentDate(currentDate.subtract(1, 'month'));
   const handleNextMonth = () => setCurrentDate(currentDate.add(1, 'month'));
 
-  // Fetch tasks from the service
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        const res = await service.getTasks();
-        setTasks(res.tasks || {});
-      } catch (error) {
-        console.error('Error getting tasks:', error);
-      }
-    };
-
-    getTasks();
-  }, []);
-
-  // Save tasks manually
-  const saveTasks = useCallback(async () => {
-    try {
-      await service.updateTasks(tasks);
-      console.log('Tasks saved successfully');
-    } catch (error) {
-      console.error('Error saving tasks:', error);
-    }
-  }, [tasks]);
-
-  // Debounce function to reduce rapid calls
-  const debounce = (fn, delay) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-    };
-  };
-
-  const debouncedSaveTasks = useCallback(debounce(saveTasks, 500), [saveTasks]);
-
-  // Update tasks with manual save
-  const updateTasks = (updater) => {
-    setTasks((prev) => {
-      const updatedTasks = updater(prev);
-      debouncedSaveTasks(); // Save tasks after the update
-      return updatedTasks;
-    });
-  };
-
   const toggleTaskCompletion = (taskIndex) => {
-    updateTasks((prev) => {
+    setTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks[taskIndex] = {
         ...updatedTasks[taskIndex],
         isCompleted: !updatedTasks[taskIndex].isCompleted,
       };
+  
+      // Save updated tasks
+      service
+        .updateTasks({ ...prev, [selectedDate]: updatedTasks })
+        .catch((error) => {
+          console.error('Error saving tasks:', error);
+        });
+  
       return { ...prev, [selectedDate]: updatedTasks };
     });
   };
-
+  
   const updateTaskName = (taskIndex, newName) => {
     if (!newName.trim()) return; // Prevent empty task names
-    updateTasks((prev) => {
+    setTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks[taskIndex].name = newName;
+  
+      // Save updated tasks
+      service
+        .updateTasks({ ...prev, [selectedDate]: updatedTasks })
+        .catch((error) => {
+          console.error('Error saving tasks:', error);
+        });
+  
       return { ...prev, [selectedDate]: updatedTasks };
     });
   };
-
+  
   const deleteTask = (taskIndex) => {
-    updateTasks((prev) => {
+    setTasks((prev) => {
       const updatedTasks = [...(prev[selectedDate] || [])];
       updatedTasks.splice(taskIndex, 1);
+  
+      // Save updated tasks
+      service
+        .updateTasks({ ...prev, [selectedDate]: updatedTasks })
+        .catch((error) => {
+          console.error('Error saving tasks:', error);
+        });
+  
       return { ...prev, [selectedDate]: updatedTasks };
     });
   };
-
+  
   const addTask = () => {
-    updateTasks((prev) => ({
-      ...prev,
-      [selectedDate]: [
+    setTasks((prev) => {
+      const updatedTasks = [
         ...(prev[selectedDate] || []),
         { isCompleted: false, name: 'New Task' },
-      ],
-    }));
+      ];
+  
+      // Save updated tasks
+      service
+        .updateTasks({ ...prev, [selectedDate]: updatedTasks })
+        .catch((error) => {
+          console.error('Error saving tasks:', error);
+        });
+  
+      return { ...prev, [selectedDate]: updatedTasks };
+    });
   };
+  
 
   const areAllTasksCompleted = (daysTasks) => {
-    return daysTasks.every(task => task.isCompleted);
+    return daysTasks.every((task) => task.isCompleted);
   };
 
   return (
@@ -166,7 +154,9 @@ const Calendar = () => {
                     ? 'bg-[#004d40] text-white font-bold border-[#3cb371]'
                     : ''
                 } ${
-                  dayTasks.length > 0 ? 'border-[#3cb371]' : ''
+                  dayTasks.length > 0 ? areAllTasksCompleted(dayTasks)
+                  ? 'border-[#3cb371]'
+                  : 'border-[#ffcc00]' : ''
                 } hover:bg-[#30363d] hover:text-[#c9d1d9] transition duration-300 ease-in-out transform hover:scale-105`}
                 title={
                   dayTasks.length > 0
@@ -176,7 +166,13 @@ const Calendar = () => {
               >
                 {dayObj.day > 0 && dayObj.day <= daysInMonth ? dayObj.day : ''}
                 {dayTasks.length > 0 && (
-                  <div className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${areAllTasksCompleted(dayTasks) ? 'bg-[#3cb371]' : 'bg-[#ffcc00]'}`}></div>
+                  <div
+                    className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
+                      areAllTasksCompleted(dayTasks)
+                        ? 'bg-[#3cb371]'
+                        : 'bg-[#ffcc00]'
+                    }`}
+                  ></div>
                 )}
               </div>
             );
@@ -192,7 +188,7 @@ const Calendar = () => {
         <div>
           {(tasks[selectedDate] || []).map((task, index) => (
             <div
-              key={index}
+              key={`${selectedDate}-${index}`} // Ensure a unique key for each task
               className="TaskList__task flex items-center gap-2 mb-2"
             >
               <input
@@ -203,6 +199,7 @@ const Calendar = () => {
               <EditableText
                 value={task.name}
                 onChange={(newName) => updateTaskName(index, newName)}
+                key={`${selectedDate}-${index}`} // Force re-render on date switch
                 className={`flex-1 bg-transparent outline-none border-none ${
                   task.isCompleted ? 'line-through text-gray-500' : 'text-white'
                 }`}
@@ -211,7 +208,13 @@ const Calendar = () => {
                 onClick={() => deleteTask(index)}
                 className="text-xs text-red-500 hover:underline"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ef4444">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  width="24px"
+                  fill="#ef4444"
+                >
                   <path d="M0 0h24v24H0z" fill="none" />
                   <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                 </svg>
