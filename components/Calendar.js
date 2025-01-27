@@ -167,15 +167,7 @@ const Calendar = ({ tasks, setTasks }) => {
               >
                 {dayObj.day > 0 && dayObj.day <= daysInMonth ? dayObj.day : ''}
                 {dayTasks.length > 0 && (
-                  <div
-                    className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
-                      areAllTasksCompleted(dayTasks)
-                        ? 'bg-[#3cb371]'
-                        : 'bg-[#ffcc00]'
-                    }`}
-                  ></div>
-                  <div
-                    className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
+                  <div className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
                       areAllTasksCompleted(dayTasks)
                         ? 'bg-[#3cb371]'
                         : 'bg-[#ffcc00]'
