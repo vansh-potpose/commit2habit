@@ -99,6 +99,7 @@ const Calendar = ({ tasks, setTasks }) => {
 
   const areAllTasksCompleted = (daysTasks) => {
     return daysTasks.every((task) => task.isCompleted);
+    return daysTasks.every((task) => task.isCompleted);
   };
 
   return (
@@ -173,6 +174,13 @@ const Calendar = ({ tasks, setTasks }) => {
                         : 'bg-[#ffcc00]'
                     }`}
                   ></div>
+                  <div
+                    className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${
+                      areAllTasksCompleted(dayTasks)
+                        ? 'bg-[#3cb371]'
+                        : 'bg-[#ffcc00]'
+                    }`}
+                  ></div>
                 )}
               </div>
             );
@@ -222,15 +230,15 @@ const Calendar = ({ tasks, setTasks }) => {
             </div>
           ))}
           {!(tasks[selectedDate] || []).length && (
-            <div className="text-sm text-[#8b949e]">No tasks for this date.</div>
+            <div className="text-sm text-[#8b949e]">No tasks for today</div>
           )}
+          <button
+            onClick={addTask}
+            className="bg-[#2d333b] hover:bg-[#3c444d] text-white py-2 px-4 mt-4 rounded-xl w-full"
+          >
+            Add Task
+          </button>
         </div>
-        <button
-          onClick={addTask}
-          className="mt-4 px-4 py-2 bg-[#21262d] text-[#58a6ff] rounded-lg hover:bg-[#30363d] transition"
-        >
-          Add Task
-        </button>
       </div>
     </div>
   );
