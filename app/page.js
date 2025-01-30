@@ -413,7 +413,8 @@ export default function Home() {
         // Get the current date and calculate the date for 7 days ago
         const currentDate = new Date();
         const sevenDaysAgo = new Date(currentDate);
-        sevenDaysAgo.setDate(currentDate.getDate() - 8);
+        sevenDaysAgo.setDate(currentDate.getDate() - 9);
+
   
         // Filter DailyProgresses to include only the last 7 days based on the "date" field
         const last7DaysData = DailyProgresses.filter((entry) => {
@@ -421,6 +422,8 @@ export default function Home() {
           const entryDate = new Date(entry.date);
           return entryDate >= sevenDaysAgo && entryDate <= currentDate;
         });
+        
+        
   
         // Now, transform the data for the last 7 days
         const content = JSON.stringify(transformDataByHabitNames(last7DaysData));

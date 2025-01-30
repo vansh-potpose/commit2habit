@@ -380,7 +380,8 @@ export class Service {
                 conf.appwriteDailyProgressCollectionId,
                 [
                     Query.equal('user_id', user_id),    // Filter by user ID
-                    Query.orderDesc('date')             // Sort by 'date' field in descending order
+                    Query.orderDesc('date') , // Sort by 'date' field in descending order
+                    Query.limit(32)           // Set the limit to 32
                 ]
             );
 
@@ -388,7 +389,6 @@ export class Service {
             for (let i = 0; i < result.documents.length; i++) {
                 result.documents[i].habits = JSON.parse(result.documents[i].habits);
             }
-
             return result;
         } catch (error) {
             console.log("Appwrite service :: getDailyProgresses :: error", error);
