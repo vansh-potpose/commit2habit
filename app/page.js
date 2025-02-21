@@ -658,6 +658,7 @@ export default function Home() {
         DailyProgresses={DailyProgresses}
         reportData={reportData}
         transformDataByHabitNames={transformDataByHabitNames}
+        template={template}
       />}
       {currentPage == 'settingswindow' && <SettingsWindow
         templates={templates}
