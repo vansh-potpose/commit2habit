@@ -9,7 +9,14 @@ const HabitContainer = ({ template = { habits: [] }, updateHabit, updateSelected
   const [isSaving, setIsSaving] = useState(false);
 
   const [edit_template, setEdit_template] = useState(template);
- 
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const dateString = today.toISOString().split('T')[0];
+    console.log("Selected UTC date string:", dateString);
+    return dateString;
+  });
+
 
   useEffect(() => {
     setEdit_click_points(template.click_points || 0); // Sync when template changes
@@ -30,7 +37,8 @@ const HabitContainer = ({ template = { habits: [] }, updateHabit, updateSelected
       // Save Daily Progress
       try {
         setIsSaving(true);
-        await saveDailyProgress(template); // Save progress using the provided function
+        console.log("Calling saveDailyProgress with date:", date); 
+        await saveDailyProgress({template,date}); // Save progress using the provided function
         
       } catch (error) {
         console.error("Error saving daily progress:", error);
@@ -152,7 +160,22 @@ const HabitContainer = ({ template = { habits: [] }, updateHabit, updateSelected
               />
             )}
           </button>
+          <div className='relative bg-buttonColor border border-borderColor hover:bg-[#262c36] text-white rounded-md font-medium w-[40px] h-[34px] flex items-center justify-center'>
+          <label htmlFor="date-input" className="text-white text-xl">📅</label>
+          <input
+            id="date-input"
+            type="date"
+            value={date}  // Uses the string "YYYY-MM-DD"
+            className="absolute right-0 opacity-0 cursor-pointer w-6"
+            onChange={(e) => {
+              // Update the state directly with the date string.
+              setDate(e.target.value);
+              console.log("Selected UTC date string:", e.target.value);
+            }}
+          />
         </div>
+        </div>
+        
       </div>
 
       <div className="flex flex-col gap-3 scrollbar scrollbar-thumb-gray-600 scrollbar-track-transparent scrollbar-thumb-rounded scrollbar-track-rounded">

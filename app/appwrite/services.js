@@ -208,52 +208,55 @@ export class Service {
 
 
     // daily progress functions----------------------------------------------
-    async createDailyProgress({ template }) {
+    async createDailyProgress({ template, date }) {
         try {
-            let user_id = (await auth.getCurrentUser()).$id;
-            let date = new Date(); // Full ISO format
-
-            // Set the time to midnight UTC to ensure consistency across time zones
-            date.setUTCHours(0, 0, 0, 0);
-            date = date.toISOString(); // Convert to ISO string in UTC
-            // Check if a document exists for the given user and date
-            let document = await this.getDailyProgress({ date });
-
-            if (document && document.documents.length > 0) {
-                // Update the existing document and return it
-                return await this.updateDailyProgress({ date, template });
+          let user_id = (await auth.getCurrentUser()).$id;
+          // date is now a string (YYYY-MM-DD) from the client.
+          console.log("Appwrite service :: createDailyProgress :: received date string", date);
+      
+          // Convert the date string to a Date object.
+          let parsedDate = new Date(date);
+          parsedDate.setUTCHours(0, 0, 0, 0);
+          const formattedDate = parsedDate.toISOString();
+          console.log("Appwrite service :: createDailyProgress :: formatted date", formattedDate);
+      
+          // Check if a document already exists for this date.
+          let document = await this.getDailyProgress({ date: formattedDate });
+          if (document && document.documents.length > 0) {
+            return await this.updateDailyProgress({ date: formattedDate, template });
+          }
+      
+          // Extract template fields; stringify habits.
+          let { template_id, template_name, habits, max_points, total_points } = template;
+          habits = JSON.stringify(habits);
+      
+          // Generate a unique ID for the document.
+          let daily_progress_id = ID.unique();
+      
+          // Create a new document using the formatted date.
+          let result = await this.databases.createDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteDailyProgressCollectionId,
+            daily_progress_id,
+            {
+              daily_progress_id,
+              user_id,
+              date: formattedDate,
+              template_id,
+              template_name,
+              habits,
+              max_points,
+              total_points
             }
-
-            // Extract template fields
-            let { template_id, template_name, habits, max_points, total_points } = template;
-            habits = JSON.stringify(habits);
-
-            // Generate a unique ID for the document if not provided
-            let daily_progress_id = ID.unique(); // Example: User-based unique ID
-
-            // Create a new document
-            let result= await this.databases.createDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteDailyProgressCollectionId,
-                daily_progress_id,
-                {
-                    daily_progress_id,
-                    user_id,
-                    date,
-                    template_id,
-                    template_name,
-                    habits,
-                    max_points,
-                    total_points
-                }
-            );
-            result.habits = JSON.parse(result.habits);
-            return result;
+          );
+          result.habits = JSON.parse(result.habits);
+          return result;
         } catch (error) {
-            console.log("Appwrite service :: createDailyProgress :: error", error);
-            return null; // Returning null to signify an error
+          console.log("Appwrite service :: createDailyProgress :: error", error);
+          return null;
         }
-    }
+      }
+      
 
 
     async getDailyProgressDocuments({ user_id, date }) {

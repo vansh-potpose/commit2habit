@@ -312,11 +312,13 @@ export default function Home() {
   };
 
 
-  const saveDailyProgress = async (template) => {
+  const saveDailyProgress = async ({template,date}) => {
     try {
       // Save the daily progress for the given template
-      let data = await service.createDailyProgress({ template });
-      if (data) {
+      console.log("Saving daily progress with date:", date); // ✅ this should not be undefined
+
+      let data = await service.createDailyProgress({ template,date });
+      if (data) { 
         console.log('Daily progress saved successfully...');
 
         // Remove the oldest entry if the daily progresses exceed the limit of 31
