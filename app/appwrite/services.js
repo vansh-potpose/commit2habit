@@ -432,10 +432,35 @@ export class Service {
     }
 
     async getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
-            fileId
-        )
+        try {
+            const res = await this.bucket.getFilePreview(
+                conf.appwriteBucketId,
+                fileId
+            );
+
+            // If the SDK already returned a URL string, return it directly
+            if (typeof res === 'string') return res;
+
+            // If we're running in a browser and got a Blob/Response, convert to an object URL
+            if (typeof window !== 'undefined') {
+                // If the SDK returned a Response-like object
+                if (res && typeof res.arrayBuffer === 'function') {
+                    const blob = await res.blob();
+                    return URL.createObjectURL(blob);
+                }
+
+                // If the SDK returned a Blob already
+                if (res instanceof Blob) {
+                    return URL.createObjectURL(res);
+                }
+            }
+
+            // Fallback: return null so caller can use a placeholder
+            return null;
+        } catch (error) {
+            console.log("Appwrite service :: getFilePreview :: error", error);
+            return null;
+        }
     }
 
     async getFile(fileId) {

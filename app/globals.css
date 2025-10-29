@@ -14,7 +14,8 @@
 }
 
 /* Light mode (optional) */
-@media (prefers-color-scheme: dark) {
+/* Apply the light color variables when the user prefers a light color scheme. */
+@media (prefers-color-scheme: light) {
   :root {
     --background: #f6f8fa; /* GitHub's light background */
     --foreground: #24292f; /* Darker text for light mode */

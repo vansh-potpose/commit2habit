@@ -67,12 +67,18 @@ const Dashboard = ({ status, setStatus, changeCompletedChallenges, updateChallen
                 : 'md:flex-col md:gap-0 md:items-start md:px-0 flex-row gap-3 items-center px-1'
               }`}
           >
-            <img
-              className={`image_container ${showingChallenges ? 'w-16 h-16 mt-5' : 'md:w-80 md:h-80 md:mt-0 w-16 h-16'
-                } rounded-full object-center overflow-hidden border border-borderColor mb-5 object-cover`}
-              src={profile_pic || '/profile.png'}
-              alt="profile"
-            />
+              <img
+                className={`image_container ${showingChallenges ? 'w-16 h-16 mt-5' : 'md:w-80 md:h-80 md:mt-0 w-16 h-16'
+                  } rounded-full object-center overflow-hidden border border-borderColor mb-5 object-cover`}
+                src={typeof profile_pic === 'string' && profile_pic ? profile_pic : '/profile.jfif'}
+                alt="profile"
+                loading="lazy"
+                onError={(e) => {
+                  // If the src is invalid (object or failed to load), fallback to placeholder
+                  console.warn('Profile image failed to load, falling back to placeholder', profile_pic);
+                  e.currentTarget.src = '/profile.jfif';
+                }}
+              />
             <div className="flex flex-grow items-center justify-between">
               <div>
                 <h1 className="name font-semibold text-lg">{user.name}</h1>

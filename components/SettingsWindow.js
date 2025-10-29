@@ -82,7 +82,16 @@ const SettingsWindow = ({ templates, status, ChangeTemplateName, ChangeAbilityNa
               <label className='text-white'>Profile picture</label>
               <div className='sm:block flex justify-center items-center w-full'>
 
-                <img src={profile_pic || "/profile.png"} alt="profile" className='object-cover rounded-full object-center overflow-hidden border border-borderColor mb-5 w-80 h-80' />
+                <img
+                  src={typeof profile_pic === 'string' && profile_pic ? profile_pic : '/profile.png'}
+                  alt="profile"
+                  className='object-cover rounded-full object-center overflow-hidden border border-borderColor mb-5 w-80 h-80'
+                  loading="lazy"
+                  onError={(e) => {
+                    console.warn('SettingsWindow: profile image failed to load, falling back to placeholder', profile_pic);
+                    e.currentTarget.src = '/profile.png';
+                  }}
+                />
               </div>
               <div className='flex gap-2'>
                 <input type="file" className='max-w-96 w-full p-2 bg-transparent rounded-md bg-bgColor border border-borderColor' onChange={(e) => { setFile(e.target.files[0]) }} />

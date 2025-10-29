@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import SvgText from './SvgText';
 import auth from '@/app/appwrite/auth';
 import Link from 'next/link';
@@ -18,7 +17,8 @@ const Navbar = ({ setCurrentPage, currentPage, user }) => {
                 </button> */}
 
 
-                <Image src="/icon2.jpg" className='w-9 h-9' alt="Github Logo" width={50} height={50} />
+                {/* Use a plain <img> for the small static logo so it renders reliably from /public */}
+                <img src="/icon2.jpg" className='w-9 h-9 object-cover' alt="Github Logo" width={36} height={36} />
                 {user ? <p className="text-white flex gap-2"> <p className='text-textColor'>{user.name}</p>/ <p>Commit2Habit</p></p> : <p className="text-white">Commit2Habit</p>}
             </div>
 
